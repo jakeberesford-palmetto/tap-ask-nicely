@@ -1,0 +1,26 @@
+{
+  "type": ["null", "object"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": ["null", "integer"]
+    },
+    "stream": {
+      "type": ["null", "string"]
+    },
+    "batch_start": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "batch_end": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "records_sync": {
+      "type": ["null", "integer"]
+    },
+    "run_time": {
+      "type": ["null", "number"]
+    }
+  }
+}
