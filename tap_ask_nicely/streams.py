@@ -1,5 +1,6 @@
 import singer
-from typing import Iterator
+import singer.utils as utils
+from typing import Generator
 
 LOGGER = singer.get_logger()
 
@@ -36,8 +37,33 @@ class Response(IncrementalStream):
     valid_replication_keys = ["start_time_utc"]
     object_type = "RESPONSE"
 
-    def sync(self, **kwargs) -> Iterator[dict]:
-        pass
+    def sync(self, **kwargs) -> Generator[dict, None, None]:
+        page = 1
+        page_size = 1000
+        response_length = page_size
+        start_time_utc = singer.get_bookmark(
+            self.state,
+            self.tap_stream_id,
+            self.replication_key,
+            default="1970-01-01T00:00:00Z",
+        )
+        end_time_utc = utils.strftime(utils.now())
+
+        while response_length >= page_size:
+            res = self.client.fetch_responses(
+                page, page_size, start_time_utc, end_time_utc
+            )
+            responses = res.get("data", [])
+            for response in responses:
+                yield response
+            page = page + 1
+            response_length = len(responses)
+        singer.write_bookmark(
+            self.state,
+            self.tap_stream_id,
+            self.replication_key,
+            end_time_utc,
+        )
 
 
 STREAMS = {
