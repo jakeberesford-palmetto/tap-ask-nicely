@@ -9,12 +9,12 @@ load_dotenv()
 
 @pytest.fixture
 def base_url():
-    return os.getenv("base_url")
+    return os.getenv("BASE_URL")
 
 
 @pytest.fixture
 def api_key():
-    return os.getenv("api_key")
+    return os.getenv("API_KEY")
 
 
 @pytest.fixture
