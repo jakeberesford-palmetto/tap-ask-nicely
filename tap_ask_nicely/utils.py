@@ -21,10 +21,10 @@ class SlackMessenger:
         start_time: str,
         run_time: int,
         record_count: int,
-        comments: str = "None",
+        comments: str = "",
         status: str = ":large_green_circle:",
     ):
-        if comments != "None":
+        if comments != "":
             status = ":red_circle:"
 
         message_header = f"Tap AskNicely Update:"
