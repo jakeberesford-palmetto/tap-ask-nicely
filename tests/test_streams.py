@@ -1,5 +1,5 @@
 import pytest
-from tap_ask_nicely.streams import Response
+from tap_ask_nicely.streams import Response, Contact, STREAMS
 import singer
 import singer.utils as utils
 
@@ -24,6 +24,8 @@ def test_response_stream_initialization(response_stream):
     assert response_stream.replication_key == "start_time_utc"
     assert response_stream.object_type == "RESPONSE"
     assert response_stream.selected
+    assert response_stream.tap_stream_id in STREAMS
+    assert STREAMS[response_stream.tap_stream_id] == Response
 
 
 # @pytest.mark.vcr()
