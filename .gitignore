@@ -45,6 +45,7 @@ coverage.xml
 *,cover
 .hypothesis/
 .pytest_cache/
+cassettes
 
 # Translations
 *.mo
@@ -99,8 +100,13 @@ config.json
 .autoenv.zsh
 .vscode
 poetry.lock
+catalog.json
+state.json
+output
 
 rsa-key
 tags
 singer-check-tap-data
 state.json
+
+# Tests
