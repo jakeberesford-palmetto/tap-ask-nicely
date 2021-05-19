@@ -18,3 +18,8 @@ class AskNicelyClient:
         url = f"{self._base_url}/api/v1/responses/asc/{page_size}/{page}/{start_time_unix}/json/{end_time_unix}"
         params = {"X-apikey": self._api_key}
         return self._client.get(url, params=params).json()
+
+    def fetch_contact(self, contact_id: int) -> dict:
+        url = f"{self._base_url}/api/v1/contact/get/{contact_id}/id"
+        params = {"X-apikey": self._api_key}
+        return self._client.get(url, params=params).json()
