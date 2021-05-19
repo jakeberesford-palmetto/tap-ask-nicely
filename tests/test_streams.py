@@ -16,6 +16,11 @@ def response_stream(client):
     return Response(client, {})
 
 
+@pytest.fixture
+def contact_stream(client):
+    return Contact(client, {})
+
+
 def test_response_stream_initialization(response_stream):
     assert response_stream.tap_stream_id == "response"
     assert response_stream.key_properties == ["response_id"]
@@ -73,3 +78,13 @@ def test_response_stream_sync(response_stream):
     finished_sync_datetime_obj = utils.strptime_to_utc(finished_sync_bookmark)
     now_obj = utils.now()
     assert finished_sync_datetime_obj.date() == now_obj.date()
+
+
+def test_contact_stream_initialization(contact_stream):
+    assert contact_stream.tap_stream_id == "contact"
+    assert contact_stream.key_properties == ["contact_id"]
+    assert contact_stream.replication_method == "FULL_TABLE"
+    assert contact_stream.object_type == "CONTACT"
+    assert contact_stream.selected
+    assert contact_stream.tap_stream_id in STREAMS
+    assert STREAMS[contact_stream.tap_stream_id] == Contact

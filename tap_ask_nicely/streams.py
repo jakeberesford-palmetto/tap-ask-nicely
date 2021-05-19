@@ -66,6 +66,16 @@ class Response(IncrementalStream):
         )
 
 
+class Contact(FullTableStream):
+    tap_stream_id = "contact"
+    key_properties = ["contact_id"]
+    object_type = "CONTACT"
+
+    def sync(self, **kwargs) -> Generator[dict, None, None]:
+        pass
+
+
 STREAMS = {
-    "responses": Response,
+    "response": Response,
+    "contact": Contact,
 }
