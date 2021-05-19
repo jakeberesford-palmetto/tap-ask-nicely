@@ -1,0 +1,21 @@
+{
+  "type": ["null", "object"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": ["null", "string"]
+    },
+    "email": {
+      "type": ["null", "string"]
+    },
+    "unsubscribedtime": {
+      "type": ["null", "string"]
+    },
+    "emailstate": {
+      "type": ["null", "string"]
+    },
+    "emailreason": {
+      "type": ["null", "string"]
+    }
+  }
+}
