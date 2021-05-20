@@ -20,3 +20,8 @@ def api_key():
 @pytest.fixture
 def client(base_url, api_key):
     return AskNicelyClient(base_url, api_key)
+
+
+@pytest.fixture
+def state():
+    return {}

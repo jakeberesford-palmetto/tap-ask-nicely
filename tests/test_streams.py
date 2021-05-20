@@ -12,13 +12,13 @@ def vcr_responses_ignore_end_time_utc(r1, r2):
 
 
 @pytest.fixture
-def response_stream(client):
-    return Response(client, {})
+def response_stream(client, state):
+    return Response(client, state)
 
 
 @pytest.fixture
-def contact_stream(client):
-    return Contact(client, {})
+def contact_stream(client, state):
+    return Contact(client, state)
 
 
 def test_response_stream_initialization(response_stream):
