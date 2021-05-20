@@ -1,8 +1,14 @@
+from datetime import datetime, timedelta
 import singer
-import singer.utils as utils
+from singer import utils
 from typing import Generator
 
 LOGGER = singer.get_logger()
+
+def increment_date_by_day(date: str) -> str:
+    date_object = datetime.strptime(date, "%Y-%m-%d")
+    add_day = date_object + timedelta(days=1)
+    return datetime.strftime(add_day, "%Y-%m-%d")
 
 
 class Stream:
@@ -92,8 +98,44 @@ class SentStatistics(Stream):
             yield stat
 
 
+class HistoricalStats(Stream):
+    tap_stream_id = "historical_stats"
+    key_properties = []
+    replication_key = ""
+    object_type = "HISTORICAL_STATS"
+    replication_method = "INCREMENTAL"
+
+    # Records that don't have a timestamp need a separate key
+    # It can't be replication key since that is on the record itself
+    bookmark_key = 'last_sync_date'
+
+    def sync(self) -> Generator[dict, None, None]:
+        start_from = singer.get_bookmark(
+            self.state,
+            self.tap_stream_id,
+            self.bookmark_key,
+            default=self.config['start_date'],
+        )
+
+
+        while start_from != datetime.strftime(datetime.now(), "%Y-%m-%d"):
+            response = self.client.fetch_historical_stats(
+                date=start_from)
+            sent_stats = response['data']
+            if sent_stats != []:
+                for stat in sent_stats:
+                    yield stat
+            start_from = increment_date_by_day(start_from)
+
+        singer.write_bookmark(self.state,
+                              self.tap_stream_id,
+                              self.bookmark_key,
+                              start_from)
+
+
 STREAMS = {
     "unsubscribed": Unsubscribed,
     # "responses": Response,
-    "sent_statistics": SentStatistics
+    "sent_statistics": SentStatistics,
+    "historical_stats": HistoricalStats
     }

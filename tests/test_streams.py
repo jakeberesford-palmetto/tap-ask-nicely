@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
 import os
 import pytest
 from dotenv import load_dotenv
-from tap_ask_nicely.streams import Response, SentStatistics, Unsubscribed
+from tap_ask_nicely.streams import HistoricalStats, Response, SentStatistics, Unsubscribed
 from tap_ask_nicely.client import AskNicelyClient
 import singer
 import singer.utils as utils
@@ -97,3 +98,37 @@ def test_sent_statistics():
         assert "passives" in sent_stat
         assert "detractors" in sent_stat
         assert "responserate" in sent_stat
+
+
+@pytest.mark.vcr()
+def test_historical_stats():
+    last_sync_date = datetime.strftime(
+        (datetime.now() - timedelta(days=1)), "%Y-%m-%d")
+    state = {"bookmarks": {"historical_stats": {
+        "last_sync_date": last_sync_date}}}
+    stream = HistoricalStats(client=client, state=state, config=config)
+
+    historical_stats = stream.sync()
+    for historical_stat in historical_stats:
+        assert "year" in historical_stat
+        assert "month" in historical_stat
+        assert "day" in historical_stat
+        assert "weekday" in historical_stat
+        assert "sent" in historical_stat
+        assert "delivered" in historical_stat
+        assert "opened" in historical_stat
+        assert "responded" in historical_stat
+        assert "promoters" in historical_stat
+        assert "passives" in historical_stat
+        assert "detractors" in historical_stat
+        assert "nps" in historical_stat
+        assert "comments" in historical_stat
+        assert "comment_length" in historical_stat
+        assert "comment_responded_percent" in historical_stat
+        assert "surveys_responded_percent" in historical_stat
+        assert "surveys_delivered_responded_percent" in historical_stat
+        assert "surveys_opened_responded_percent" in historical_stat
+
+
+    assert state == {"bookmarks": {
+        "historical_stats": {"last_sync_date": datetime.strftime(datetime.now(), "%Y-%m-%d")}}}
