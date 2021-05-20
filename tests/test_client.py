@@ -1,13 +1,19 @@
-from tap_ask_nicely.client import AskNicelyClient
+import os
 import pytest
 
 
-def test_initialization(base_url, api_key, client):
-    assert type(client) == AskNicelyClient
-    assert client._base_url == base_url
-    assert client._api_key == api_key
+@pytest.mark.vcr
+def test_fetch_unsubscribed(client):
+    unsubscribed_data = client.fetch_unsubscribed()
+    for unsubscribed in unsubscribed_data["data"]:
+        assert "id" in unsubscribed
+        assert "email" in unsubscribed
+        assert "unsubscribetime" in unsubscribed
+        assert "emailstate" in unsubscribed
+        assert "emailreason" in unsubscribed
 
 
+@pytest.mark.vcr
 def test_fetch_responses(client):
     page = 1
     page_size = 50
@@ -54,6 +60,7 @@ def test_fetch_responses(client):
         assert "email_token" in response
 
 
+@pytest.mark.vcr
 def test_fetch_contact(client):
     # get a contact_id
     page = 1

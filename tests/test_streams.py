@@ -1,6 +1,7 @@
+import os
 import pytest
 from singer.bookmarks import get_bookmark
-from tap_ask_nicely.streams import Response, Contact, STREAMS
+from tap_ask_nicely.streams import Response, Contact, Unsubscribed, STREAMS
 import singer
 import singer.utils as utils
 
@@ -20,6 +21,21 @@ def response_stream(client, state):
 @pytest.fixture
 def contact_stream(client, state):
     return Contact(client, state)
+
+
+@pytest.fixture
+def unsubscribed_stream(client, state):
+    return Unsubscribed(client, state)
+
+
+@pytest.mark.vcr()
+def test_unsubscribed(unsubscribed_stream):
+    for unsubscribed in unsubscribed_stream.sync():
+        assert "id" in unsubscribed
+        assert "email" in unsubscribed
+        assert "unsubscribetime" in unsubscribed
+        assert "emailstate" in unsubscribed
+        assert "emailreason" in unsubscribed
 
 
 def test_response_stream_initialization(response_stream):
@@ -73,6 +89,7 @@ def test_response_stream_sync(response_stream):
         assert "dashboard" in record
         assert "email_token" in record
         contact_ids.add(record["contact_id"])
+
     finished_sync_bookmark = singer.get_bookmark(
         response_stream.state,
         response_stream.tap_stream_id,

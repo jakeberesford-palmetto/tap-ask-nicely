@@ -16,7 +16,7 @@
       "type": ["null", "string"],
       "format": "date-time"
     },
-    "records_sync": {
+    "records_synced": {
       "type": ["null", "integer"]
     },
     "run_time": {

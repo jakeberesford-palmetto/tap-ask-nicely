@@ -4,7 +4,7 @@ from tap_ask_nicely.discovery import discover
 from tap_ask_nicely.sync import sync
 
 # Fill in any required config keys from the config.json here
-REQUIRED_CONFIG_KEYS = [...]
+REQUIRED_CONFIG_KEYS = ["subdomain", "api_key"]
 
 LOGGER = singer.get_logger()
 
@@ -21,5 +21,5 @@ def main():
         sync(args.config, args.state, catalog)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
