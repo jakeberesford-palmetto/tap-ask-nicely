@@ -1,0 +1,207 @@
+{
+    "type": [
+        "null",
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "response_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "person_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "contact_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "name": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "email": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "answer": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "answerlabel": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "data": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "comment": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "note": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "status": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "dontcontact": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sent": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "opened": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "responded": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "lastemailed": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "created": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "segment": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "question_type": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "published": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "publishedname": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "publishedavatar": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "deliverymethod": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "survey_template": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "theme": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "life_cycle": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "customproperty_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "topic_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_zendesk_detractor_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_custom_alerts_mary_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_email_alert_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "dashboard": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "email_token": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+    }
+}

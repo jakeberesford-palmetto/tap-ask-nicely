@@ -1,0 +1,303 @@
+{
+    "type": [
+        "null",
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "lastemailed": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "active": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "created": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "scheduled": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "firstname": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "lastname": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "name": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "email": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "company_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "segment": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "unsubscribetime": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "source": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sourceid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "importedattime": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "intercomid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "imported": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "profiled": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "profile": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "avatar": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "publishedavatar": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "publishedavatarcolor": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "deleted": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "emailstate": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "intercomsegmentid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "surveycount": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "delayminutes": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "emailreason": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "scheduler_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "elastic_at": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "life_cycle": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfaccountid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "dynamicscontactid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "responsetime": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "channel": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sflastsenthash": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sflastsenttime": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfcontactid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "integrationsegment_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "importer_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfcaseid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfleadid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "applicationid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "mc_contact_identifier": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "event": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "triggeremail": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "obeyrules": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "thendeactivate": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "customproperty_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+    }
+}
