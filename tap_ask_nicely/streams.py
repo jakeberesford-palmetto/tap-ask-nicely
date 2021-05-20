@@ -66,12 +66,13 @@ class Response(Stream):
             page = page + 1
             response_length = len(responses)
             
-        singer.write_bookmark(
-            self.state,
-            self.tap_stream_id,
-            self.replication_key,
-            end_time_utc,
-        )
+        # Bookmarking is done in the Sync method
+        # singer.write_bookmark(
+        #     self.state,
+        #     self.tap_stream_id,
+        #     self.replication_key,
+        #     end_time_utc,
+        # )
 
 
 STREAMS = {
