@@ -27,8 +27,17 @@ def unsubscribed_stream(client, state):
     return Unsubscribed(client, state)
 
 
+def test_unsubscribed_stream_properties(unsubscribed_stream):
+    assert unsubscribed_stream.tap_stream_id == "unsubscribed"
+    assert unsubscribed_stream.key_properties == ["id"]
+    assert unsubscribed_stream.replication_method == "FULL_TABLE"
+    assert unsubscribed_stream.object_type == "UNSUBSCRIBED"
+    assert unsubscribed_stream.tap_stream_id in STREAMS
+    assert STREAMS[unsubscribed_stream.tap_stream_id] == Unsubscribed
+
+
 @pytest.mark.vcr()
-def test_unsubscribed(unsubscribed_stream):
+def test_unsubscribed_stream_sync(unsubscribed_stream):
     for unsubscribed in unsubscribed_stream.sync():
         assert "id" in unsubscribed
         assert "email" in unsubscribed
