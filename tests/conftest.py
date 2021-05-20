@@ -15,3 +15,8 @@ def test_config():
 @pytest.fixture
 def client(test_config):
     return AskNicelyClient(test_config)
+
+
+@pytest.fixture
+def state():
+    return {}
