@@ -11,8 +11,9 @@ class AskNicelyClient:
         self._client = requests.Session()
 
     def fetch_unsubscribed(self):
-        url = f"{self._BASE_URL}/contacts/unsubscribed?X-apikey={self._api_key}"
-        return self._client.get(url).json()
+        url = f"{self._BASE_URL}/contacts/unsubscribed"
+        params = {"X-apikey": self._api_key}
+        return self._client.get(url, params=params).json()
 
 
     def fetch_responses(
@@ -20,6 +21,6 @@ class AskNicelyClient:
     ) -> dict:
         start_time_unix = int(strptime_to_utc(start_time_utc).timestamp())
         end_time_unix = int(strptime_to_utc(end_time_utc).timestamp())
-        url = f"{self._base_url}/api/v1/responses/asc/{page_size}/{page}/{start_time_unix}/json/{end_time_unix}"
+        url = f"{self._BASE_URL}/responses/asc/{page_size}/{page}/{start_time_unix}/json/0"
         params = {"X-apikey": self._api_key}
         return self._client.get(url, params=params).json()
