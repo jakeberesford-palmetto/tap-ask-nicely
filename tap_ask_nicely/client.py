@@ -29,3 +29,14 @@ class AskNicelyClient:
         url = f"{self._BASE_URL}/sentstats/{rolling_history}"
         params = {"X-apikey": self._api_key}
         return self._client.get(url, params=params).json()
+
+    def fetch_historical_stats(self, date: str) -> dict:
+        url = f"{self._BASE_URL}/stats"
+        date_list = date.split('-')
+        params = {
+            "X-apikey": self._api_key,
+            "year": date_list[0],
+            "month": date_list[1],
+            "day": date_list[2]
+        }
+        return self._client.get(url, params=params).json()
