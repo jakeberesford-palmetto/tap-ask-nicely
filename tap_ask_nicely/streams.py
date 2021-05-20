@@ -49,15 +49,30 @@ class Response(IncrementalStream):
         )
         end_time_utc = utils.strftime(utils.now())
 
+        contact_ids = set(
+            singer.get_bookmark(
+                self.state,
+                "globals",
+                "contact_ids",
+                default=[],
+            )
+        )
         while response_length >= page_size:
             res = self.client.fetch_responses(
                 page, page_size, start_time_utc, end_time_utc
             )
-            responses = res.get("data", [])
-            for response in responses:
-                yield response
+            records = res.get("data", [])
+            for record in records:
+                yield record
+                contact_ids.add(record["contact_id"])
             page = page + 1
-            response_length = len(responses)
+            response_length = len(records)
+        singer.write_bookmark(
+            self.state,
+            "globals",
+            "contact_ids",
+            list(contact_ids),
+        )
         singer.write_bookmark(
             self.state,
             self.tap_stream_id,
@@ -68,11 +83,16 @@ class Response(IncrementalStream):
 
 class Contact(FullTableStream):
     tap_stream_id = "contact"
-    key_properties = ["contact_id"]
+    key_properties = ["id"]
     object_type = "CONTACT"
 
     def sync(self, **kwargs) -> Generator[dict, None, None]:
-        pass
+        contact_ids = singer.get_bookmark(
+            self.state, "globals", "contact_ids", default=set()
+        )
+        for contact_id in contact_ids:
+            response = self.client.fetch_contact(contact_id)
+            yield {**response["data"], **{"customproperty_c": None}}
 
 
 STREAMS = {
