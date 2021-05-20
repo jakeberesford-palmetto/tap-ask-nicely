@@ -89,11 +89,11 @@ def sync(config, state, catalog):
     singer.write_state(state)
 
     # Comment out for local runs
-    if config["slack_notifications"] == True:
-        SlackMessenger.send_message(
-            run_id=run_id,
-            start_time=pipeline_start,
-            run_time=(time.perf_counter() - pipeline_start_time),
-            record_count=total_records,
-            comments='\n'.join(stream_comments),
-        )
+    # if config["slack_notifications"] == True:
+    #     SlackMessenger.send_message(
+    #         run_id=run_id,
+    #         start_time=pipeline_start,
+    #         run_time=(time.perf_counter() - pipeline_start_time),
+    #         record_count=total_records,
+    #         comments='\n'.join(stream_comments),
+    #     )
