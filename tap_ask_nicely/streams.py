@@ -10,7 +10,7 @@ class Stream:
     key_properties = []
     replication_method = ""
     valid_replication_keys = []
-    replication_key = "last_updated_at"
+    replication_key = ""
     object_type = ""
     selected = True
 
@@ -22,20 +22,27 @@ class Stream:
         raise NotImplementedError("Sync of child class not implemented")
 
 
-class IncrementalStream(Stream):
-    replication_method = "INCREMENTAL"
-
-
-class FullTableStream(Stream):
+class Unsubscribed(Stream):
+    tap_stream_id = "unsubscribed"
+    key_properties = ["id"]
+    object_type = "UNSUBSCRIBED"
     replication_method = "FULL_TABLE"
 
+    def sync(self) -> Generator[dict, None, None]:
+        response = self.client.fetch_unsubscribed()
+        unsubscribes = response.get("data")
+        for unsubscribe in unsubscribes:
+            yield unsubscribe
 
-class Response(IncrementalStream):
+
+class Response(Stream):
     tap_stream_id = "response"
     key_properties = ["response_id"]
     replication_key = "start_time_utc"
     valid_replication_keys = ["start_time_utc"]
     object_type = "RESPONSE"
+    replication_method = "INCREMENTAL"
+
 
     def sync(self, **kwargs) -> Generator[dict, None, None]:
         page = 1
@@ -58,14 +65,17 @@ class Response(IncrementalStream):
                 yield response
             page = page + 1
             response_length = len(responses)
-        singer.write_bookmark(
-            self.state,
-            self.tap_stream_id,
-            self.replication_key,
-            end_time_utc,
-        )
+            
+        # Bookmarking is done in the Sync method
+        # singer.write_bookmark(
+        #     self.state,
+        #     self.tap_stream_id,
+        #     self.replication_key,
+        #     end_time_utc,
+        # )
 
 
 STREAMS = {
-    "responses": Response,
-}
+    "unsubscribed": Unsubscribed,
+    "responses": Response
+    }

@@ -1,7 +1,14 @@
+import os
 import pytest
-from tap_ask_nicely.streams import Response
+from dotenv import load_dotenv
+from tap_ask_nicely.streams import Response, Unsubscribed
+from tap_ask_nicely.client import AskNicelyClient
 import singer
 import singer.utils as utils
+
+load_dotenv()
+config = {"subdomain": os.getenv("SUBDOMAIN"), "api_key": os.getenv("API_KEY")}
+client = AskNicelyClient(config)
 
 
 def vcr_responses_ignore_end_time_utc(r1, r2):
@@ -11,25 +18,35 @@ def vcr_responses_ignore_end_time_utc(r1, r2):
     assert r1_uri[0:9] == r2_uri[0:9]
 
 
-@pytest.fixture
-def response_stream(client):
-    return Response(client, {})
+# def test_response_stream_initialization(response_stream):
+#     assert response_stream.tap_stream_id == "response"
+#     assert response_stream.key_properties == ["response_id"]
+#     assert response_stream.replication_method == "INCREMENTAL"
+#     assert response_stream.valid_replication_keys == ["start_time_utc"]
+#     assert response_stream.replication_key == "start_time_utc"
+#     assert response_stream.object_type == "RESPONSE"
+#     assert response_stream.selected
 
 
-def test_response_stream_initialization(response_stream):
-    assert response_stream.tap_stream_id == "response"
-    assert response_stream.key_properties == ["response_id"]
-    assert response_stream.replication_method == "INCREMENTAL"
-    assert response_stream.valid_replication_keys == ["start_time_utc"]
-    assert response_stream.replication_key == "start_time_utc"
-    assert response_stream.object_type == "RESPONSE"
-    assert response_stream.selected
+@pytest.mark.vcr()
+def test_unsubscribed():
+    stream = Unsubscribed(client=client, state={})
+
+    unsubscribed_data = stream.sync()
+    for unsubscribed in unsubscribed_data:
+        assert "id" in unsubscribed
+        assert "email" in unsubscribed
+        assert "unsubscribetime" in unsubscribed
+        assert "emailstate" in unsubscribed
+        assert "emailreason" in unsubscribed
 
 
-# @pytest.mark.vcr()
-# Need to ignore the end_time_utc section of the URI still before using VCR
-def test_response_stream_sync(response_stream):
-    for record in response_stream.sync():
+@pytest.mark.vcr()
+def test_response_stream_sync():
+    stream = Response(client=client, state={})
+
+    response_stream = stream.sync()
+    for record in response_stream:
         assert "response_id" in record
         assert "person_id" in record
         assert "contact_id" in record
@@ -63,11 +80,4 @@ def test_response_stream_sync(response_stream):
         assert "workflow_email_alert_c" in record
         assert "dashboard" in record
         assert "email_token" in record
-    finished_sync_bookmark = singer.get_bookmark(
-        response_stream.state,
-        response_stream.tap_stream_id,
-        response_stream.replication_key,
-    )
-    finished_sync_datetime_obj = utils.strptime_to_utc(finished_sync_bookmark)
-    now_obj = utils.now()
-    assert finished_sync_datetime_obj.date() == now_obj.date()
+
