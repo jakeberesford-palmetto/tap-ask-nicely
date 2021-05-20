@@ -12,11 +12,11 @@ class Stream:
     valid_replication_keys = []
     replication_key = ""
     object_type = ""
-    selected = True
 
-    def __init__(self, client, state):
+    def __init__(self, client, state, config):
         self.client = client
         self.state = state
+        self.config = config
 
     def sync(self, *args, **kwargs):
         raise NotImplementedError("Sync of child class not implemented")
@@ -65,7 +65,7 @@ class Response(Stream):
                 yield response
             page = page + 1
             response_length = len(responses)
-            
+
         # Bookmarking is done in the Sync method
         # singer.write_bookmark(
         #     self.state,
@@ -75,7 +75,25 @@ class Response(Stream):
         # )
 
 
+class SentStatistics(Stream):
+    # Due to this Endpoint only returning calculations, there is no backfill
+    # capabilities.
+    tap_stream_id = "sent_statistics"
+    key_properties = []
+    object_type = "SENT_STATISTICS"
+    replication_method = "FULL_TABLE"
+
+    def sync(self) -> Generator[dict, None, None]:
+        rolling_day = self.config['sent_statistics_days'] if 'sent_statistics_days' in self.config else 1
+        response = self.client.fetch_sent_statistics(
+            rolling_history=rolling_day)
+        sent_stats = [response]
+        for stat in sent_stats:
+            yield stat
+
+
 STREAMS = {
     "unsubscribed": Unsubscribed,
-    "responses": Response
+    # "responses": Response,
+    "sent_statistics": SentStatistics
     }
