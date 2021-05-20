@@ -1,0 +1,33 @@
+{
+  "type": ["null", "object"],
+  "additionalProperties": false,
+  "properties": {
+    "nps": {
+      "type": ["null", "number"]
+    },
+    "sent": {
+      "type": ["null", "integer"]
+    },
+    "delivered": {
+      "type": ["null", "integer"]
+    },
+    "opened": {
+      "type": ["null", "integer"]
+    },
+    "responded": {
+      "type": ["null", "integer"]
+    },
+    "promoters": {
+      "type": ["null", "integer"]
+    },
+    "passives": {
+      "type": ["null", "integer"]
+    },
+    "detractors": {
+      "type": ["null", "integer"]
+    },
+    "responserate": {
+      "type": ["null", "string"]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "type": ["null", "object"],
+  "additionalProperties": false,
+  "properties": {
+    "year": {
+      "type": ["null", "string"]
+    },
+    "month": {
+      "type": ["null", "string"]
+    },
+    "day": {
+      "type": ["null", "string"]
+    },
+    "weekday": {
+      "type": ["null", "string"]
+    },
+    "sent": {
+      "type": ["null", "string"]
+    },
+    "delivered": {
+      "type": ["null", "string"]
+    },
+    "opened": {
+      "type": ["null", "string"]
+    },
+    "responded": {
+      "type": ["null", "string"]
+    },
+    "promoters": {
+      "type": ["null", "string"]
+    },
+    "passives": {
+      "type": ["null", "string"]
+    },
+    "detractors": {
+      "type": ["null", "string"]
+    },
+    "nps": {
+      "type": ["null", "string"]
+    },
+    "comments": {
+      "type": ["null", "string"]
+    },
+    "comment_length": {
+      "type": ["null", "string"]
+    },
+    "comment_responded_percent": {
+      "type": ["null", "string"]
+    },
+    "surveys_responded_percent": {
+      "type": ["null", "string"]
+    },
+    "surveys_delivered_responded_percent": {
+      "type": ["null", "string"]
+    },
+    "surveys_opened_responded_percent": {
+      "type": ["null", "string"]
+    }
+  }
+}

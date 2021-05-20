@@ -1,8 +1,14 @@
+from datetime import datetime, timedelta
 import singer
-import singer.utils as utils
+from singer import utils
 from typing import Generator
 
 LOGGER = singer.get_logger()
+
+def increment_date_by_day(date: str) -> str:
+    date_object = datetime.strptime(date, "%Y-%m-%d")
+    add_day = date_object + timedelta(days=1)
+    return datetime.strftime(add_day, "%Y-%m-%d")
 
 
 class Stream:
@@ -12,11 +18,11 @@ class Stream:
     valid_replication_keys = []
     replication_key = ""
     object_type = ""
-    selected = True
 
-    def __init__(self, client, state):
+    def __init__(self, client, state, config):
         self.client = client
         self.state = state
+        self.config = config
 
     def sync(self, *args, **kwargs):
         raise NotImplementedError("Sync of child class not implemented")
@@ -65,7 +71,7 @@ class Response(Stream):
                 yield response
             page = page + 1
             response_length = len(responses)
-            
+
         # Bookmarking is done in the Sync method
         # singer.write_bookmark(
         #     self.state,
@@ -75,7 +81,61 @@ class Response(Stream):
         # )
 
 
+class SentStatistics(Stream):
+    # Due to this Endpoint only returning calculations, there is no backfill
+    # capabilities.
+    tap_stream_id = "sent_statistics"
+    key_properties = []
+    object_type = "SENT_STATISTICS"
+    replication_method = "FULL_TABLE"
+
+    def sync(self) -> Generator[dict, None, None]:
+        rolling_day = self.config['sent_statistics_days'] if 'sent_statistics_days' in self.config else 1
+        response = self.client.fetch_sent_statistics(
+            rolling_history=rolling_day)
+        sent_stats = [response]
+        for stat in sent_stats:
+            yield stat
+
+
+class HistoricalStats(Stream):
+    tap_stream_id = "historical_stats"
+    key_properties = []
+    replication_key = ""
+    object_type = "HISTORICAL_STATS"
+    replication_method = "INCREMENTAL"
+
+    # Records that don't have a timestamp need a separate key
+    # It can't be replication key since that is on the record itself
+    bookmark_key = 'last_sync_date'
+
+    def sync(self) -> Generator[dict, None, None]:
+        start_from = singer.get_bookmark(
+            self.state,
+            self.tap_stream_id,
+            self.bookmark_key,
+            default=self.config['start_date'],
+        )
+
+
+        while start_from != datetime.strftime(datetime.now(), "%Y-%m-%d"):
+            response = self.client.fetch_historical_stats(
+                date=start_from)
+            sent_stats = response['data']
+            if sent_stats != []:
+                for stat in sent_stats:
+                    yield stat
+            start_from = increment_date_by_day(start_from)
+
+        singer.write_bookmark(self.state,
+                              self.tap_stream_id,
+                              self.bookmark_key,
+                              start_from)
+
+
 STREAMS = {
     "unsubscribed": Unsubscribed,
-    "responses": Response
+    # "responses": Response,
+    "sent_statistics": SentStatistics,
+    "historical_stats": HistoricalStats
     }

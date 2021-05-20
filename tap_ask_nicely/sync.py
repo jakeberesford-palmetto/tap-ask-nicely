@@ -27,7 +27,7 @@ def sync(config, state, catalog):
             record_count = 0
 
             tap_stream_id = stream.tap_stream_id
-            stream_obj = STREAMS[tap_stream_id](client, state)
+            stream_obj = STREAMS[tap_stream_id](client, state, config)
             replication_key = stream_obj.replication_key
             stream_schema = stream.schema.to_dict()
             stream_metadata = metadata.to_map(stream.metadata)
@@ -57,7 +57,7 @@ def sync(config, state, catalog):
                     total_records += 1
 
                 if replication_key != "":
-                    state = singer.write_bookmark()(
+                    state = singer.write_bookmark(
                         state, tap_stream_id, replication_key, record[replication_key]
                     )
                     singer.write_state(state, tap_stream_id)

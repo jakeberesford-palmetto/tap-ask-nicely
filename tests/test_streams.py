@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
 import os
 import pytest
 from dotenv import load_dotenv
-from tap_ask_nicely.streams import Response, Unsubscribed
+from tap_ask_nicely.streams import HistoricalStats, Response, SentStatistics, Unsubscribed
 from tap_ask_nicely.client import AskNicelyClient
 import singer
 import singer.utils as utils
@@ -30,7 +31,7 @@ def vcr_responses_ignore_end_time_utc(r1, r2):
 
 @pytest.mark.vcr()
 def test_unsubscribed():
-    stream = Unsubscribed(client=client, state={})
+    stream = Unsubscribed(client=client, state={}, config=config)
 
     unsubscribed_data = stream.sync()
     for unsubscribed in unsubscribed_data:
@@ -43,7 +44,7 @@ def test_unsubscribed():
 
 @pytest.mark.vcr()
 def test_response_stream_sync():
-    stream = Response(client=client, state={})
+    stream = Response(client=client, state={}, config=config)
 
     response_stream = stream.sync()
     for record in response_stream:
@@ -81,3 +82,53 @@ def test_response_stream_sync():
         assert "dashboard" in record
         assert "email_token" in record
 
+
+@pytest.mark.vcr()
+def test_sent_statistics():
+    stream = SentStatistics(client=client, state={}, config=config)
+
+    sent_stats = stream.sync()
+    for sent_stat in sent_stats:
+        assert "nps" in sent_stat
+        assert "sent" in sent_stat
+        assert "delivered" in sent_stat
+        assert "opened" in sent_stat
+        assert "responded" in sent_stat
+        assert "promoters" in sent_stat
+        assert "passives" in sent_stat
+        assert "detractors" in sent_stat
+        assert "responserate" in sent_stat
+
+
+@pytest.mark.vcr()
+def test_historical_stats():
+    last_sync_date = datetime.strftime(
+        (datetime.now() - timedelta(days=1)), "%Y-%m-%d")
+    state = {"bookmarks": {"historical_stats": {
+        "last_sync_date": last_sync_date}}}
+    stream = HistoricalStats(client=client, state=state, config=config)
+
+    historical_stats = stream.sync()
+    for historical_stat in historical_stats:
+        assert "year" in historical_stat
+        assert "month" in historical_stat
+        assert "day" in historical_stat
+        assert "weekday" in historical_stat
+        assert "sent" in historical_stat
+        assert "delivered" in historical_stat
+        assert "opened" in historical_stat
+        assert "responded" in historical_stat
+        assert "promoters" in historical_stat
+        assert "passives" in historical_stat
+        assert "detractors" in historical_stat
+        assert "nps" in historical_stat
+        assert "comments" in historical_stat
+        assert "comment_length" in historical_stat
+        assert "comment_responded_percent" in historical_stat
+        assert "surveys_responded_percent" in historical_stat
+        assert "surveys_delivered_responded_percent" in historical_stat
+        assert "surveys_opened_responded_percent" in historical_stat
+
+
+    assert state == {"bookmarks": {
+        "historical_stats": {"last_sync_date": datetime.strftime(datetime.now(), "%Y-%m-%d")}}}
