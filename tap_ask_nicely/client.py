@@ -24,3 +24,8 @@ class AskNicelyClient:
         url = f"{self._BASE_URL}/responses/asc/{page_size}/{page}/{start_time_unix}/json/0"
         params = {"X-apikey": self._api_key}
         return self._client.get(url, params=params).json()
+
+    def fetch_sent_statistics(self, rolling_history: int) -> dict:
+        url = f"{self._BASE_URL}/sentstats/{rolling_history}"
+        params = {"X-apikey": self._api_key}
+        return self._client.get(url, params=params).json()

@@ -65,3 +65,21 @@ def test_fetch_responses():
         assert "workflow_email_alert_c" in response
         assert "dashboard" in response
         assert "email_token" in response
+
+
+@pytest.mark.vcr()
+def test_fetch_sent_statistics():
+    client = AskNicelyClient(config)
+    rolling_day = 30 # 30 is default
+
+    sent_stats = client.fetch_sent_statistics(rolling_history=rolling_day)
+    assert "nps" in sent_stats
+    assert "sent" in sent_stats
+    assert "delivered" in sent_stats
+    assert "opened" in sent_stats
+    assert "responded" in sent_stats
+    assert "promoters" in sent_stats
+    assert "passives" in sent_stats
+    assert "detractors" in sent_stats
+    assert "responserate" in sent_stats
+
