@@ -125,3 +125,44 @@ def test_fetch_contact(client):
     assert "obeyrules" in contact
     assert "thendeactivate" in contact
     assert "customproperty_c" in contact
+
+
+@pytest.mark.vcr()
+def test_fetch_sent_statistics(client):
+    rolling_day = 30  # 30 is default
+
+    sent_stats = client.fetch_sent_statistics(rolling_history=rolling_day)
+    assert "nps" in sent_stats
+    assert "sent" in sent_stats
+    assert "delivered" in sent_stats
+    assert "opened" in sent_stats
+    assert "responded" in sent_stats
+    assert "promoters" in sent_stats
+    assert "passives" in sent_stats
+    assert "detractors" in sent_stats
+    assert "responserate" in sent_stats
+
+
+@pytest.mark.vcr()
+def test_fetch_historical_stats(client):
+    date = "2020-01-01"
+
+    historical_stats = client.fetch_historical_stats(date=date)["data"][0]
+    assert "year" in historical_stats
+    assert "month" in historical_stats
+    assert "day" in historical_stats
+    assert "weekday" in historical_stats
+    assert "sent" in historical_stats
+    assert "delivered" in historical_stats
+    assert "opened" in historical_stats
+    assert "responded" in historical_stats
+    assert "promoters" in historical_stats
+    assert "passives" in historical_stats
+    assert "detractors" in historical_stats
+    assert "nps" in historical_stats
+    assert "comments" in historical_stats
+    assert "comment_length" in historical_stats
+    assert "comment_responded_percent" in historical_stats
+    assert "surveys_responded_percent" in historical_stats
+    assert "surveys_delivered_responded_percent" in historical_stats
+    assert "surveys_opened_responded_percent" in historical_stats

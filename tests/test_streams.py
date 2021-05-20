@@ -1,6 +1,16 @@
+from datetime import datetime, timedelta
 import os
+from tests.conftest import config
 import pytest
-from tap_ask_nicely.streams import Response, Contact, Unsubscribed, STREAMS
+from tap_ask_nicely.streams import (
+    Response,
+    Contact,
+    Unsubscribed,
+    SentStatistics,
+    HistoricalStats,
+    STREAMS,
+)
+
 import singer
 import singer.utils as utils
 
@@ -13,18 +23,28 @@ def vcr_responses_ignore_end_time_utc(r1, r2):
 
 
 @pytest.fixture
-def response_stream(client, state):
-    return Response(client, state)
+def response_stream(client, state, config):
+    return Response(client, state, config)
 
 
 @pytest.fixture
-def contact_stream(client, state):
-    return Contact(client, state)
+def contact_stream(client, state, config):
+    return Contact(client, state, config)
 
 
 @pytest.fixture
-def unsubscribed_stream(client, state):
-    return Unsubscribed(client, state)
+def unsubscribed_stream(client, state, config):
+    return Unsubscribed(client, state, config)
+
+
+@pytest.fixture
+def sent_statistics_stream(client, state, config):
+    return SentStatistics(client, state, config)
+
+
+@pytest.fixture
+def historical_stats_stream(client, state, config):
+    return HistoricalStats(client, state, config)
 
 
 def test_unsubscribed_stream_properties(unsubscribed_stream):
@@ -119,7 +139,6 @@ def test_contact_stream_properties(contact_stream):
     assert contact_stream.key_properties == ["id"]
     assert contact_stream.replication_method == "FULL_TABLE"
     assert contact_stream.object_type == "CONTACT"
-    assert contact_stream.selected
     assert contact_stream.tap_stream_id in STREAMS
     assert STREAMS[contact_stream.tap_stream_id] == Contact
 
@@ -185,3 +204,48 @@ def test_contact_stream_sync(response_stream, contact_stream, state):
     assert num_records == len(
         singer.get_bookmark(state, "globals", "contact_ids", default=set())
     )
+
+
+@pytest.mark.vcr()
+def test_sent_statistics(sent_statistics_stream):
+    for sent_stat in sent_statistics_stream.sync():
+        assert "nps" in sent_stat
+        assert "sent" in sent_stat
+        assert "delivered" in sent_stat
+        assert "opened" in sent_stat
+        assert "responded" in sent_stat
+        assert "promoters" in sent_stat
+        assert "passives" in sent_stat
+        assert "detractors" in sent_stat
+        assert "responserate" in sent_stat
+
+
+@pytest.mark.vcr()
+def test_historical_stats(historical_stats_stream):
+    last_sync_date = datetime.strftime((datetime.now() - timedelta(days=1)), "%Y-%m-%d")
+    state = {"bookmarks": {"historical_stats": {"last_sync_date": last_sync_date}}}
+    historical_stats_stream.state = state
+
+    for historical_stat in historical_stats_stream.sync():
+        assert "year" in historical_stat
+        assert "month" in historical_stat
+        assert "day" in historical_stat
+        assert "weekday" in historical_stat
+        assert "sent" in historical_stat
+        assert "delivered" in historical_stat
+        assert "opened" in historical_stat
+        assert "responded" in historical_stat
+        assert "promoters" in historical_stat
+        assert "passives" in historical_stat
+        assert "detractors" in historical_stat
+        assert "nps" in historical_stat
+        assert "comments" in historical_stat
+        assert "comment_length" in historical_stat
+        assert "comment_responded_percent" in historical_stat
+        assert "surveys_responded_percent" in historical_stat
+        assert "surveys_delivered_responded_percent" in historical_stat
+        assert "surveys_opened_responded_percent" in historical_stat
+
+    assert state["bookmarks"][historical_stats_stream.tap_stream_id][
+        "last_sync_date"
+    ] == datetime.strftime(datetime.now(), "%Y-%m-%d")

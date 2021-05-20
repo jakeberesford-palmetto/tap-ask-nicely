@@ -27,3 +27,19 @@ class AskNicelyClient:
         url = f"{self._base_url}/contact/get/{contact_id}/id"
         params = {"X-apikey": self._api_key}
         return self._client.get(url, params=params).json()
+
+    def fetch_sent_statistics(self, rolling_history: int) -> dict:
+        url = f"{self._base_url}/sentstats/{rolling_history}"
+        params = {"X-apikey": self._api_key}
+        return self._client.get(url, params=params).json()
+
+    def fetch_historical_stats(self, date: str) -> dict:
+        url = f"{self._base_url}/stats"
+        date_list = date.split("-")
+        params = {
+            "X-apikey": self._api_key,
+            "year": date_list[0],
+            "month": date_list[1],
+            "day": date_list[2],
+        }
+        return self._client.get(url, params=params).json()
