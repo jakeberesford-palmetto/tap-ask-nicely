@@ -1,6 +1,5 @@
 import os
 import pytest
-from singer.bookmarks import get_bookmark
 from tap_ask_nicely.streams import Response, Contact, Unsubscribed, STREAMS
 import singer
 import singer.utils as utils
@@ -38,14 +37,13 @@ def test_unsubscribed(unsubscribed_stream):
         assert "emailreason" in unsubscribed
 
 
-def test_response_stream_initialization(response_stream):
+def test_response_stream_properties(response_stream):
     assert response_stream.tap_stream_id == "response"
     assert response_stream.key_properties == ["response_id"]
     assert response_stream.replication_method == "INCREMENTAL"
     assert response_stream.valid_replication_keys == ["start_time_utc"]
     assert response_stream.replication_key == "start_time_utc"
     assert response_stream.object_type == "RESPONSE"
-    assert response_stream.selected
     assert response_stream.tap_stream_id in STREAMS
     assert STREAMS[response_stream.tap_stream_id] == Response
 
@@ -107,7 +105,7 @@ def test_response_stream_sync(response_stream):
         assert bookmark_id in contact_ids
 
 
-def test_contact_stream_initialization(contact_stream):
+def test_contact_stream_properties(contact_stream):
     assert contact_stream.tap_stream_id == "contact"
     assert contact_stream.key_properties == ["id"]
     assert contact_stream.replication_method == "FULL_TABLE"
@@ -117,6 +115,8 @@ def test_contact_stream_initialization(contact_stream):
     assert STREAMS[contact_stream.tap_stream_id] == Contact
 
 
+# @pytest.mark.vcr()
+# Need to ignore the end_time_utc section of the URI still before using VCR
 def test_contact_stream_sync(response_stream, contact_stream, state):
     # response stream must be ran first to get all contacts
     list(response_stream.sync())

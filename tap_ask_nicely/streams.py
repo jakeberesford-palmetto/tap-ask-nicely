@@ -91,7 +91,7 @@ class Contact(Stream):
     tap_stream_id = "contact"
     key_properties = ["id"]
     object_type = "CONTACT"
-    replication_method = "INCREMENTAL"
+    replication_method = "FULL_TABLE"
 
     def sync(self, **kwargs) -> Generator[dict, None, None]:
         contact_ids = singer.get_bookmark(
