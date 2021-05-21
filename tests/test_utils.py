@@ -10,18 +10,19 @@ from tap_ask_nicely.utils import SlackMessenger
 #         yield
 
 
-def test_build_url():
-    slack_messenger = SlackMessenger()
+@pytest.fixture
+def slack_messenger():
+    return SlackMessenger()
 
+
+def test_build_url(slack_messenger):
     assert (
         slack_messenger.build_url()
         == "https://hooks.slack.com/services/test/webhook/address"
     )
 
 
-def test_send_message():
-    slack_messenger = SlackMessenger()
-
+def test_send_message(slack_messenger):
     response = slack_messenger.send_message(
         run_id=123,
         start_time="Now",

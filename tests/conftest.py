@@ -8,10 +8,19 @@ load_dotenv()
 
 
 @pytest.fixture
-def test_config():
-    return {"subdomain": os.getenv("SUBDOMAIN"), "api_key": os.getenv("API_KEY")}
+def config():
+    return {
+        "subdomain": os.getenv("SUBDOMAIN"),
+        "api_key": os.getenv("API_KEY"),
+        "start_date": "2020-01-01",
+    }
 
 
 @pytest.fixture
-def client(test_config):
-    return AskNicelyClient(test_config)
+def client(config):
+    return AskNicelyClient(config)
+
+
+@pytest.fixture
+def state():
+    return {}

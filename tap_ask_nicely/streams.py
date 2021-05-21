@@ -5,6 +5,7 @@ from typing import Generator
 
 LOGGER = singer.get_logger()
 
+
 def increment_date_by_day(date: str) -> str:
     date_object = datetime.strptime(date, "%Y-%m-%d")
     add_day = date_object + timedelta(days=1)
@@ -36,7 +37,7 @@ class Unsubscribed(Stream):
 
     def sync(self) -> Generator[dict, None, None]:
         response = self.client.fetch_unsubscribed()
-        unsubscribes = response.get("data")
+        unsubscribes = response.get("data", [])
         for unsubscribe in unsubscribes:
             yield unsubscribe
 
@@ -48,7 +49,6 @@ class Response(Stream):
     valid_replication_keys = ["start_time_utc"]
     object_type = "RESPONSE"
     replication_method = "INCREMENTAL"
-
 
     def sync(self, **kwargs) -> Generator[dict, None, None]:
         page = 1
@@ -62,23 +62,51 @@ class Response(Stream):
         )
         end_time_utc = utils.strftime(utils.now())
 
+        contact_ids = set(
+            singer.get_bookmark(
+                self.state,
+                "globals",
+                "contact_ids",
+                default=[],
+            )
+        )
         while response_length >= page_size:
             res = self.client.fetch_responses(
                 page, page_size, start_time_utc, end_time_utc
             )
-            responses = res.get("data", [])
-            for response in responses:
-                yield response
+            records = res.get("data", [])
+            for record in records:
+                yield record
+                contact_ids.add(record["contact_id"])
             page = page + 1
-            response_length = len(responses)
+            response_length = len(records)
+        singer.write_bookmark(
+            self.state,
+            "globals",
+            "contact_ids",
+            list(contact_ids),
+        )
+        singer.write_bookmark(
+            self.state,
+            self.tap_stream_id,
+            self.replication_key,
+            end_time_utc,
+        )
 
-        # Bookmarking is done in the Sync method
-        # singer.write_bookmark(
-        #     self.state,
-        #     self.tap_stream_id,
-        #     self.replication_key,
-        #     end_time_utc,
-        # )
+
+class Contact(Stream):
+    tap_stream_id = "contact"
+    key_properties = ["id"]
+    object_type = "CONTACT"
+    replication_method = "FULL_TABLE"
+
+    def sync(self, **kwargs) -> Generator[dict, None, None]:
+        contact_ids = singer.get_bookmark(
+            self.state, "globals", "contact_ids", default=set()
+        )
+        for contact_id in contact_ids:
+            response = self.client.fetch_contact(contact_id)
+            yield {**response["data"], **{"customproperty_c": None}}
 
 
 class SentStatistics(Stream):
@@ -90,9 +118,12 @@ class SentStatistics(Stream):
     replication_method = "FULL_TABLE"
 
     def sync(self) -> Generator[dict, None, None]:
-        rolling_day = self.config['sent_statistics_days'] if 'sent_statistics_days' in self.config else 1
-        response = self.client.fetch_sent_statistics(
-            rolling_history=rolling_day)
+        rolling_day = (
+            self.config["sent_statistics_days"]
+            if "sent_statistics_days" in self.config
+            else 1
+        )
+        response = self.client.fetch_sent_statistics(rolling_history=rolling_day)
         sent_stats = [response]
         for stat in sent_stats:
             yield stat
@@ -107,35 +138,33 @@ class HistoricalStats(Stream):
 
     # Records that don't have a timestamp need a separate key
     # It can't be replication key since that is on the record itself
-    bookmark_key = 'last_sync_date'
+    bookmark_key = "last_sync_date"
 
     def sync(self) -> Generator[dict, None, None]:
         start_from = singer.get_bookmark(
             self.state,
             self.tap_stream_id,
             self.bookmark_key,
-            default=self.config['start_date'],
+            default=self.config["start_date"],
         )
 
-
         while start_from != datetime.strftime(datetime.now(), "%Y-%m-%d"):
-            response = self.client.fetch_historical_stats(
-                date=start_from)
-            sent_stats = response['data']
+            response = self.client.fetch_historical_stats(date=start_from)
+            sent_stats = response["data"]
             if sent_stats != []:
                 for stat in sent_stats:
                     yield stat
             start_from = increment_date_by_day(start_from)
 
-        singer.write_bookmark(self.state,
-                              self.tap_stream_id,
-                              self.bookmark_key,
-                              start_from)
+        singer.write_bookmark(
+            self.state, self.tap_stream_id, self.bookmark_key, start_from
+        )
 
 
 STREAMS = {
+    "response": Response,
+    "contact": Contact,
     "unsubscribed": Unsubscribed,
-    # "responses": Response,
     "sent_statistics": SentStatistics,
-    "historical_stats": HistoricalStats
-    }
+    "historical_stats": HistoricalStats,
+}
