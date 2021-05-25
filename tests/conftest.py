@@ -11,11 +11,12 @@ load_dotenv()
 
 
 @pytest.fixture
-def config():
+def config(local_file_path):
     return {
         "subdomain": os.getenv("SUBDOMAIN"),
         "api_key": os.getenv("API_KEY"),
         "start_date": "2020-01-01",
+        "file_path": local_file_path,
     }
 
 

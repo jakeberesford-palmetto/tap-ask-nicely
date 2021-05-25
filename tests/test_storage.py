@@ -21,11 +21,6 @@ def s3_config(aws_credentials, bucket_name, file_path):
 
 
 @pytest.fixture
-def local_file_config(local_file_path):
-    return {"file_path": local_file_path}
-
-
-@pytest.fixture
 def bucket(s3, bucket_name, file_path, raw_file_data):
     bucket = s3.create_bucket(Bucket=bucket_name)
     bucket.put_object(Body=json.dumps(raw_file_data), Key=file_path)
@@ -38,8 +33,8 @@ def s3_handler(bucket, s3_config):
 
 
 @pytest.fixture
-def local_file_handler(local_file_config):
-    return LocalFileHandler(local_file_config)
+def local_file_handler(config):
+    return LocalFileHandler(config)
 
 
 def test_create_source_handler(s3_config):
@@ -89,14 +84,14 @@ def test_local_file_handler_write_file(
 
 
 def test_storage_handler_read_file(
-    raw_file_data, file_path, s3_config, local_file_config, bucket, local_file_path
+    raw_file_data, file_path, s3_config, config, bucket, local_file_path
 ):
     # create testing file for local reads
     with open(local_file_path, "w") as fp:
         fp.write(json.dumps(raw_file_data))
 
     s3_storage_handler = StorageHandler(s3_config)
-    local_file_storage_handler = StorageHandler(local_file_config)
+    local_file_storage_handler = StorageHandler(config)
     assert type(s3_storage_handler._source_handler) == S3Handler
     assert type(local_file_storage_handler._source_handler) == LocalFileHandler
 
@@ -109,13 +104,13 @@ def test_storage_handler_write_file(
     file_path,
     local_file_path,
     s3_config,
-    local_file_config,
+    config,
     s3,
     bucket,
     bucket_name,
 ):
     s3_storage_handler = StorageHandler(s3_config)
-    local_file_storage_handler = StorageHandler(local_file_config)
+    local_file_storage_handler = StorageHandler(config)
 
     s3_storage_handler.write_file(file_path, raw_file_data)
     local_file_storage_handler.write_file(local_file_path, raw_file_data)
