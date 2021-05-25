@@ -1,6 +1,9 @@
 import requests
 import singer
+import logging as LOGGER
 from singer import Transformer, metadata
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Content, Email, Mail
 
 ## Env file for testing - Change to Config for Prod
 ## Keep an Env for a single key in the meltano
@@ -160,3 +163,22 @@ class AuditLogs:
             "audit_log",
             audit_log,
         )
+
+
+class EmailMessenger:
+    message = Mail(
+        from_email='from_email@example.com',
+        to_emails='to@example.com',
+        subject='Sending with Twilio SendGrid is Fun',
+        html_content='<strong>and easy to do anywhere, even with Python</strong>'
+    )
+
+    try:
+        sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+        response = sg.send(message)
+
+        LOGGER.info(response.status_code)
+        LOGGER.info(response.body)
+        LOGGER.info(response.headers)
+    except Exception as exception:
+        LOGGER.warning(exception)
