@@ -11,6 +11,7 @@ packages = [
 python = "^3.8"
 requests = "^2.25.1"
 singer-python = "^5.9.1"
+boto3 = "^1.17.79"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.5.4"
@@ -24,6 +25,7 @@ pytest-vcr = "^1.0.2"
 python-dotenv = "^0.15.0"
 vcrpy = "^4.1.1"
 black = "^21.5b1"
+moto = {extras = ["s3"], version = "^2.0.8"}
 
 [tool.poetry.scripts]
 tap-ask-nicely = 'tap_ask_nicely:main'
