@@ -6,24 +6,20 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - deps-{{ .Branch }}-{{ checksum "poetry.lock" }}
+            - deps-{{ checksum "poetry.lock" }}
       - python/install-packages:
           pkg-manager: poetry
       - save_cache:
-          key: deps-{{ .Branch }}-{{ checksum "poetry.lock" }}
+          key: deps-{{ checksum "poetry.lock" }}
           paths:
-            - /home/circleci/tap-ask-nicely/poetry.lock
+            - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
           command: |
             poetry run pytest --cov-report term-missing --cov=tap_ask_nicely tests/
-          name: Run Tests
-      - run:
-          command: |
             poetry run coveralls
-          name: Send Coverage Data to Coveralls
+          name: Run Tests and Upload Coverage
 orbs:
   python: circleci/python@1.4.0
-  # coveralls: coveralls/coveralls@1.0.6
 workflows:
   main:
     jobs:
