@@ -37,6 +37,11 @@ def s3_handler(bucket, s3_config):
     return S3Handler(s3_config)
 
 
+@pytest.fixture
+def local_file_handler():
+    return LocalFileHandler({})
+
+
 def test_create_source_handler(s3_config):
     assert type(create_source_handler(s3_config)) == S3Handler
     assert type(create_source_handler({})) == LocalFileHandler
@@ -61,3 +66,24 @@ def test_s3_handler_write_file(s3, s3_handler, bucket_name, file_path):
     obj_data = json.loads(obj.get()["Body"].read())
 
     assert obj_data == raw_data
+
+
+def test_local_file_handler_read_file(
+    local_file_handler, raw_file_data, file_path, tmpdir
+):
+    full_path = tmpdir.join(file_path)
+    with open(full_path, "w") as fp:
+        fp.write(json.dumps(raw_file_data))
+
+    data = local_file_handler.read_file(full_path)
+    assert data == raw_file_data
+
+
+def test_local_file_handler_write_file(
+    local_file_handler, raw_file_data, file_path, tmpdir
+):
+    full_path = tmpdir.join(file_path)
+    local_file_handler.write_file(full_path, raw_file_data)
+
+    with open(full_path, "r") as fp:
+        assert json.loads(fp.read()) == raw_file_data

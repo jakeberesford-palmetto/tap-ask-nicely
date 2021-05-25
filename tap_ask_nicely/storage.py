@@ -45,7 +45,9 @@ class LocalFileHandler:
         self._config = config
 
     def read_file(self, file_path):
-        pass
+        with open(file_path) as f:
+            return json.load(f)
 
     def write_file(self, file_path, data):
-        pass
+        with open(file_path, "w") as f:
+            f.write(json.dumps(data))
