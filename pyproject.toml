@@ -11,6 +11,7 @@ packages = [
 python = "^3.8"
 requests = "^2.25.1"
 singer-python = "^5.9.1"
+sendgrid = "^6.7.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.4"
