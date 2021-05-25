@@ -17,11 +17,12 @@ jobs:
           command: |
             poetry run pytest --cov-report term-missing --cov=tap_ask_nicely tests/
           name: Run Tests
-      - coveralls/upload:
-          token: COVERALLS_REPO_TOKEN
+      - run:
+          command: |
+            coveralls
 orbs:
   python: circleci/python@1.4.0
-  coveralls: coveralls/coveralls@1.0.6
+  # coveralls: coveralls/coveralls@1.0.6
 workflows:
   main:
     jobs:
