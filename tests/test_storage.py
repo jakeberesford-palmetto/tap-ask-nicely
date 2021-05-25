@@ -71,6 +71,7 @@ def test_s3_handler_write_file(s3, s3_handler, bucket_name, file_path):
 def test_local_file_handler_read_file(
     local_file_handler, raw_file_data, file_path, tmpdir
 ):
+    # Create a test file
     full_path = tmpdir.join(file_path)
     with open(full_path, "w") as fp:
         fp.write(json.dumps(raw_file_data))
@@ -87,3 +88,38 @@ def test_local_file_handler_write_file(
 
     with open(full_path, "r") as fp:
         assert json.loads(fp.read()) == raw_file_data
+
+
+def test_storage_handler_read_file(raw_file_data, file_path, s3_config, bucket, tmpdir):
+    # create testing file for local reads
+    full_path = tmpdir.join(file_path)
+    with open(full_path, "w") as fp:
+        fp.write(json.dumps(raw_file_data))
+
+    s3_storage_handler = StorageHandler(s3_config)
+    local_file_storage_handler = StorageHandler({})
+    assert type(s3_storage_handler._source_handler) == S3Handler
+    assert type(local_file_storage_handler._source_handler) == LocalFileHandler
+
+    assert s3_storage_handler.read_file(file_path) == raw_file_data
+    assert local_file_storage_handler.read_file(full_path) == raw_file_data
+
+
+def test_storage_handler_write_file(
+    raw_file_data, file_path, s3_config, s3, bucket, bucket_name, tmpdir
+):
+    # create testing file for local reads
+    full_path = tmpdir.join(file_path)
+
+    s3_storage_handler = StorageHandler(s3_config)
+    local_file_storage_handler = StorageHandler({})
+    new_data = [10, 11]
+
+    s3_storage_handler.write_file(file_path, new_data)
+    local_file_storage_handler.write_file(full_path, new_data)
+
+    s3_data = json.loads(s3.Object(bucket_name, file_path).get()["Body"].read())
+
+    assert s3_data == new_data
+    with open(full_path, "r") as fp:
+        assert json.loads(fp.read()) == new_data

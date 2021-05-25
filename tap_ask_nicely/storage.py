@@ -16,10 +16,10 @@ class StorageHandler:
         self._source_handler = create_source_handler(self._config)
 
     def read_file(self, file_path):
-        pass
+        return self._source_handler.read_file(file_path)
 
     def write_file(self, file_path, data):
-        pass
+        self._source_handler.write_file(file_path, data)
 
 
 class S3Handler:
