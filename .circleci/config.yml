@@ -4,20 +4,21 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - deps-{{ .Branch }}-{{ checksum "poetry.lock" }}
+      # - restore_cache:
+      #     keys:
+      #       - deps-{{ .Branch }}-{{ checksum "poetry.lock" }}
       - python/install-packages:
           pkg-manager: poetry
-      - save_cache:
-          key: deps-{{ .Branch }}-{{ checksum "poetry.lock" }}
-          paths:
-            - /home/circleci/.cache/pypoetry/virtualenvs
+      # - save_cache:
+      #     key: deps-{{ .Branch }}-{{ checksum "poetry.lock" }}
+      #     paths:
+      #       - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
           command: |
             poetry run pytest --cov-report term-missing --cov=tap_ask_nicely tests/
           name: Run Tests
-      - coveralls/upload
+      - coveralls/upload:
+          token: $COVERALLS_REPO_TOKEN
 orbs:
   python: circleci/python@1.4.0
   coveralls: coveralls/coveralls@1.0.6
