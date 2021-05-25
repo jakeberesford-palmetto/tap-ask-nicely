@@ -49,3 +49,18 @@ def s3(setup_aws_credentials):
     with mock_s3():
         session = boto3.Session(region_name="us-east-1")
         yield session.resource("s3")
+
+
+@pytest.fixture
+def raw_file_data():
+    return [1, 2, 3, 5]
+
+
+@pytest.fixture
+def file_path():
+    return "test-file-path.json"
+
+
+@pytest.fixture
+def local_file_path(tmpdir, file_path):
+    return tmpdir.join(file_path)

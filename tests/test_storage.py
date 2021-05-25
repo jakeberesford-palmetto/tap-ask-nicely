@@ -11,22 +11,22 @@ def bucket_name():
 
 
 @pytest.fixture
-def s3_config(aws_credentials, bucket_name):
-    return {"protocol": "s3", "credentials": aws_credentials, "bucket": bucket_name}
+def s3_config(aws_credentials, bucket_name, file_path):
+    return {
+        "protocol": "s3",
+        "credentials": aws_credentials,
+        "bucket": bucket_name,
+        "file_path": file_path,
+    }
 
 
 @pytest.fixture
-def raw_file_data():
-    return [1, 2, 3, 5]
+def local_file_config(local_file_path):
+    return {"file_path": local_file_path}
 
 
 @pytest.fixture
-def file_path():
-    return "test-file-path.json"
-
-
-@pytest.fixture
-def bucket(s3, s3_config, bucket_name, file_path, raw_file_data):
+def bucket(s3, bucket_name, file_path, raw_file_data):
     bucket = s3.create_bucket(Bucket=bucket_name)
     bucket.put_object(Body=json.dumps(raw_file_data), Key=file_path)
     yield
@@ -38,8 +38,8 @@ def s3_handler(bucket, s3_config):
 
 
 @pytest.fixture
-def local_file_handler():
-    return LocalFileHandler({})
+def local_file_handler(local_file_config):
+    return LocalFileHandler(local_file_config)
 
 
 def test_create_source_handler(s3_config):
@@ -69,57 +69,59 @@ def test_s3_handler_write_file(s3, s3_handler, bucket_name, file_path):
 
 
 def test_local_file_handler_read_file(
-    local_file_handler, raw_file_data, file_path, tmpdir
+    local_file_handler, raw_file_data, local_file_path
 ):
     # Create a test file
-    full_path = tmpdir.join(file_path)
-    with open(full_path, "w") as fp:
+    with open(local_file_path, "w") as fp:
         fp.write(json.dumps(raw_file_data))
 
-    data = local_file_handler.read_file(full_path)
+    data = local_file_handler.read_file(local_file_path)
     assert data == raw_file_data
 
 
 def test_local_file_handler_write_file(
-    local_file_handler, raw_file_data, file_path, tmpdir
+    local_file_handler, raw_file_data, local_file_path
 ):
-    full_path = tmpdir.join(file_path)
-    local_file_handler.write_file(full_path, raw_file_data)
+    local_file_handler.write_file(local_file_path, raw_file_data)
 
-    with open(full_path, "r") as fp:
+    with open(local_file_path, "r") as fp:
         assert json.loads(fp.read()) == raw_file_data
 
 
-def test_storage_handler_read_file(raw_file_data, file_path, s3_config, bucket, tmpdir):
+def test_storage_handler_read_file(
+    raw_file_data, file_path, s3_config, local_file_config, bucket, local_file_path
+):
     # create testing file for local reads
-    full_path = tmpdir.join(file_path)
-    with open(full_path, "w") as fp:
+    with open(local_file_path, "w") as fp:
         fp.write(json.dumps(raw_file_data))
 
     s3_storage_handler = StorageHandler(s3_config)
-    local_file_storage_handler = StorageHandler({})
+    local_file_storage_handler = StorageHandler(local_file_config)
     assert type(s3_storage_handler._source_handler) == S3Handler
     assert type(local_file_storage_handler._source_handler) == LocalFileHandler
 
     assert s3_storage_handler.read_file(file_path) == raw_file_data
-    assert local_file_storage_handler.read_file(full_path) == raw_file_data
+    assert local_file_storage_handler.read_file(local_file_path) == raw_file_data
 
 
 def test_storage_handler_write_file(
-    raw_file_data, file_path, s3_config, s3, bucket, bucket_name, tmpdir
+    raw_file_data,
+    file_path,
+    local_file_path,
+    s3_config,
+    local_file_config,
+    s3,
+    bucket,
+    bucket_name,
 ):
-    # create testing file for local reads
-    full_path = tmpdir.join(file_path)
-
     s3_storage_handler = StorageHandler(s3_config)
-    local_file_storage_handler = StorageHandler({})
-    new_data = [10, 11]
+    local_file_storage_handler = StorageHandler(local_file_config)
 
-    s3_storage_handler.write_file(file_path, new_data)
-    local_file_storage_handler.write_file(full_path, new_data)
+    s3_storage_handler.write_file(file_path, raw_file_data)
+    local_file_storage_handler.write_file(local_file_path, raw_file_data)
 
     s3_data = json.loads(s3.Object(bucket_name, file_path).get()["Body"].read())
 
-    assert s3_data == new_data
-    with open(full_path, "r") as fp:
-        assert json.loads(fp.read()) == new_data
+    assert s3_data == raw_file_data
+    with open(local_file_path, "r") as fp:
+        assert json.loads(fp.read()) == raw_file_data
