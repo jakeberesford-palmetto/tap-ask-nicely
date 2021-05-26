@@ -176,15 +176,16 @@ class SendgridMessenger:
         html_content='<strong>and easy to do anywhere, even with Python</strong>'
     )
 
-    try:
-        sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
-        response = sg.send(message)
+    def send_message(self, message):
+        try:
+            sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+            response = sg.send(message)
 
-        LOGGER.info(response.status_code)
-        LOGGER.info(response.body)
-        LOGGER.info(response.headers)
-    except Exception as error:
-        LOGGER.warning(error)
+            LOGGER.info(response.status_code)
+            LOGGER.info(response.body)
+            LOGGER.info(response.headers)
+        except Exception as error:
+            LOGGER.warning(error)
 
 
 class GmailMessenger:
