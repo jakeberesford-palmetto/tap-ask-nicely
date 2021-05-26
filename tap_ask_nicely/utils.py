@@ -47,7 +47,9 @@ class SlackMessenger:
         }
 
         return requests.post(
-            SlackMessenger.build_url(), headers=SlackMessenger.headers, data=json.dumps(json_message)
+            SlackMessenger.build_url(),
+            headers=SlackMessenger.headers,
+            data=json.dumps(json_message),
         )
 
     def build_url() -> str:
@@ -170,15 +172,15 @@ class AuditLogs:
 
 class SendgridMessenger:
     message = Mail(
-        from_email='from_email@example.com',
-        to_emails='to@example.com',
-        subject='Sending with Twilio SendGrid is Fun',
-        html_content='<strong>and easy to do anywhere, even with Python</strong>'
+        from_email="from_email@example.com",
+        to_emails="to@example.com",
+        subject="Sending with Twilio SendGrid is Fun",
+        html_content="<strong>and easy to do anywhere, even with Python</strong>",
     )
 
     def send_message(self, message):
         try:
-            sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+            sg = SendGridAPIClient(os.getenv("SENDGRID_API_KEY"))
             response = sg.send(message)
 
             LOGGER.info(response.status_code)
@@ -192,7 +194,7 @@ class GmailMessenger:
     def __init__(self) -> None:
         self.sender_email = "info@mashey.com"
         self.receiver_email = "jordan@mashey.com"
-        self.password = os.getenv('GMAIL_PW')
+        self.password = os.getenv("GMAIL_PW")
         self.message = MIMEMultipart("alternative")
         # Add conditional logic for a :red_circle: and :yellow_circle: emoji
         self.message["Subject"] = "Mashey | Data Sync | :large_green_circle:"
@@ -239,7 +241,6 @@ class GmailMessenger:
         part2 = MIMEText(html, "html")
 
         return part1, part2
-
 
     def send_message(self, sync_overview):
         part1, part2 = self.create_message(sync_overview)
