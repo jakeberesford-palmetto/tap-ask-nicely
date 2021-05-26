@@ -10,28 +10,28 @@ from tap_ask_nicely.utils import SlackMessenger
 #         yield
 
 
-@pytest.fixture
-def slack_messenger():
-    return SlackMessenger()
+# @pytest.fixture
+# def slack_messenger():
+#     return SlackMessenger()
 
 
-def test_build_url(slack_messenger):
-    assert (
-        slack_messenger.build_url()
-        == "https://hooks.slack.com/services/test/webhook/address"
-    )
+# def test_build_url(slack_messenger):
+#     assert (
+#         slack_messenger.build_url()
+#         == "https://hooks.slack.com/services/test/webhook/address"
+#     )
 
 
-def test_send_message(slack_messenger):
-    response = slack_messenger.send_message(
-        run_id=123,
-        start_time="Now",
-        run_time=60,
-        record_count=20,
-        status="Success",
-        comment=":red_circle:",
-    )
+# def test_send_message(slack_messenger):
+#     response = slack_messenger.send_message(
+#         run_id=123,
+#         start_time="Now",
+#         run_time=60,
+#         record_count=20,
+#         status="Success",
+#         comment=":red_circle:",
+#     )
 
-    breakpoint()
+#     breakpoint()
 
-    assert response.status_code == 200
+#     assert response.status_code == 200
