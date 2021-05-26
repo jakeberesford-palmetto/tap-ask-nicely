@@ -166,3 +166,11 @@ def test_fetch_historical_stats(client):
     assert "surveys_responded_percent" in historical_stats
     assert "surveys_delivered_responded_percent" in historical_stats
     assert "surveys_opened_responded_percent" in historical_stats
+
+@pytest.mark.vcr()
+def test_fetch_nps(client):
+    days = 30
+
+    nps_score = client.fetch_nps(days)
+
+    assert "NPS" in nps_score

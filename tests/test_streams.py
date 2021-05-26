@@ -9,6 +9,7 @@ from tap_ask_nicely.streams import (
     Unsubscribed,
     SentStatistics,
     HistoricalStats,
+    NpsScore,
     STREAMS,
 )
 
@@ -46,6 +47,10 @@ def sent_statistics_stream(client, state, config):
 @pytest.fixture
 def historical_stats_stream(client, state, config):
     return HistoricalStats(client, state, config)
+
+@pytest.fixture
+def nps_score_stream(client, state, config):
+    return NpsScore(client, state, config)
 
 
 def test_unsubscribed_stream_properties(unsubscribed_stream):
@@ -255,3 +260,8 @@ def test_historical_stats(historical_stats_stream):
     assert state["bookmarks"][historical_stats_stream.tap_stream_id][
         "last_sync_date"
     ] == datetime.strftime(datetime.now(), "%Y-%m-%d")
+
+def test_nps_score(nps_score_stream):
+    for nps in nps_score_stream.sync():
+        assert "NPS" in nps
+        

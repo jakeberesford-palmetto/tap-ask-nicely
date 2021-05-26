@@ -149,6 +149,20 @@ class HistoricalStats(Stream):
             self.state, self.tap_stream_id, self.bookmark_key, start_from
         )
 
+class NpsScore(Stream):
+    tap_stream_id = "nps"
+    key_properties = []
+    replication_key = ""
+    object_type = "NPS"
+    replication_method = "FULL_TABLE"
+
+    def sync(self) -> Generator[dict, None, None]:
+        rolling_days = self.config.get('nps_days', 30)
+
+        response = self.client.fetch_nps(rolling_days=rolling_days)
+        yield response
+
+
 
 STREAMS = {
     "response": Response,
@@ -156,4 +170,5 @@ STREAMS = {
     "unsubscribed": Unsubscribed,
     "sent_statistics": SentStatistics,
     "historical_stats": HistoricalStats,
+    "nps": NpsScore,
 }
