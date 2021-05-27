@@ -37,6 +37,7 @@ from tap_ask_nicely.utils import SlackMessenger, SendgridMessenger, GmailMesseng
 
 #     assert response.status_code == 200
 
+
 @pytest.fixture
 def gmail_messenger():
     return GmailMessenger()
@@ -52,7 +53,7 @@ def test_data():
         "end_time": datetime.now(timezone.utc) + timedelta(hours=1),
         "record_count": 98765,
         "status": "Success",
-        "comment": "🟢"
+        "comment": "🟢",
     }
 
     return data
