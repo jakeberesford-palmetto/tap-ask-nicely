@@ -206,7 +206,7 @@ class GmailMessenger:
         text = f"""\
         Hi,
         
-        It's the Mashey team with a data pipeline update.
+        It's the Mashey team with a data pipeline update!
 
         Run ID: {sync_data["runid"]}
         Stream Name: {sync_data["stream_name"]}
@@ -256,10 +256,13 @@ class GmailMessenger:
         # Create secure connection with server and send email
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(self.sender_email, self.password)
-            response = server.sendmail(
-                self.sender_email, self.receiver_email, self.message.as_string()
-            )
-            server.quit()
-        
-        return response
+            try:
+                server.login(self.sender_email, self.password)
+                response = server.sendmail(
+                    self.sender_email, self.receiver_email, self.message.as_string()
+                )
+                server.quit()
+                return response
+            except Exception as error:
+                LOGGER.error(f"The following exception occured: {error}")
+                print(f"The following exception occured: {error}")
