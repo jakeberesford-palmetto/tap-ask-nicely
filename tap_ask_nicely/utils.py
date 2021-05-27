@@ -197,7 +197,7 @@ class GmailMessenger:
         self.password = os.getenv("GMAIL_PW")
         self.message = MIMEMultipart("alternative")
         # Add conditional logic for a :red_circle: and :yellow_circle: emoji
-        self.message["Subject"] = "Mashey | Data Sync | :large_green_circle:"
+        self.message["Subject"] = "Mashey | Data Sync | 🟢"
         self.message["From"] = self.sender_email
         self.message["To"] = self.receiver_email
 
@@ -205,30 +205,34 @@ class GmailMessenger:
         # Create the plain-text and HTML version of your message
         text = f"""\
         Hi,
+        
         It's the Mashey team with a data pipeline update.
 
-        run_id
-        stream_name
-        batch_start
-        batch_end
-        records_synced
-        run_time
-        comments
+        Run ID: {sync_data["runid"]}
+        Stream Name: {sync_data["stream_name"]}
+        Batch Start: {sync_data["start_time"]}
+        Run Time: {sync_data["run_time"]}
+        Batch End: {sync_data["end_time"]}
+        Records Synced: {sync_data["record_count"]}
+        Status: {sync_data["status"]}
+        Comments: {sync_data["comment"]}
         """
 
         html = f"""\
         <html>
         <body>
             <p>Hi,<br>
-            It's the Mashey team with a data pipeline update.<br>
+            <br>
+            It's the Mashey team with a data pipeline update!<br>
             <ul>
-                <li>run_id</li>
-                <li>stream_name</li>
-                <li>batch_start</li>
-                <li>batch_end</li>
-                <li>records_synced</li>
-                <li>run_time</li>
-                <li>comments</li>
+                <li>Run ID: {sync_data["runid"]}</li>
+                <li>Stream Name: {sync_data["stream_name"]}</li>
+                <li>Batch Start: {sync_data["start_time"]}</li>
+                <li>Run Time: {sync_data["run_time"]}</li>
+                <li>Batch End: {sync_data["end_time"]}</li>
+                <li>Records Synced: {sync_data["record_count"]}</li>
+                <li>Status: {sync_data["status"]}</li>
+                <li>Comments: {sync_data["comment"]}</li>
             </ul>
             <a href="http://www.mashey.com">Mashey</a><br>
             </p>
@@ -242,7 +246,7 @@ class GmailMessenger:
 
         return part1, part2
 
-    def send_message(self, sync_overview):
+    def send_message(self, sync_overview: dict):
         part1, part2 = self.create_message(sync_overview)
         # Add HTML/plain-text parts to MIMEMultipart message
         # The email client will try to render the last part first
@@ -253,6 +257,9 @@ class GmailMessenger:
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(self.sender_email, self.password)
-            server.sendmail(
+            response = server.sendmail(
                 self.sender_email, self.receiver_email, self.message.as_string()
             )
+            server.quit()
+        
+        return response
