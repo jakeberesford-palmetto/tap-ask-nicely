@@ -39,41 +39,35 @@ from tap_ask_nicely.utils import SlackMessenger, SendgridMessenger, GmailMesseng
 
 
 @pytest.fixture
-def gmail_messenger():
-    return GmailMessenger()
-
-
-@pytest.fixture
 def test_data():
     data = {
-        "runid": 12345,
-        "stream_name": "Test Data Stream",
+        "run_id": 12345,
         "start_time": datetime.now(timezone.utc),
         "run_time": 60,
-        "end_time": datetime.now(timezone.utc) + timedelta(hours=1),
         "record_count": 98765,
-        "status": "Success",
-        "comment": "🟢",
+        "status": "",
+        "comments": "",
     }
 
     return data
 
 
-def test_gmail_messenger(gmail_messenger, test_data):
-    gm = gmail_messenger
-    part1, part2 = gm.create_message(test_data)
+def test_gmail_messenger(test_data):
+    data = test_data
+    gm = GmailMessenger(data)
+    part1, part2, message = gm.create_message()
 
     assert isinstance(part1, MIMEText)
     assert isinstance(part2, MIMEText)
 
-    gm.message.attach(part1)
-    gm.message.attach(part2)
+    message.attach(part1)
+    message.attach(part2)
 
-    assert len(gm.message._payload) == 2
-    assert isinstance(gm.message._payload[0], MIMEText)
-    assert isinstance(gm.message._payload[1], MIMEText)
+    assert len(message._payload) == 2
+    assert isinstance(message._payload[0], MIMEText)
+    assert isinstance(message._payload[1], MIMEText)
 
-    response = gm.send_message(test_data)
+    response = gm.send_message()
 
     assert isinstance(response, dict)
     assert len(response) == 0
