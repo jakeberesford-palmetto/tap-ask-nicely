@@ -103,6 +103,7 @@ poetry.lock
 catalog.json
 state.json
 output
+sample_config.json
 
 rsa-key
 tags
