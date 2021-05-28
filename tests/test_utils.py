@@ -71,3 +71,8 @@ def test_gmail_messenger(test_data):
 
     assert isinstance(response, dict)
     assert len(response) == 0
+
+
+def test_sendgrid_messenger(test_data):
+    sg = SendgridMessenger(test_data)
+    sg.send_message()
