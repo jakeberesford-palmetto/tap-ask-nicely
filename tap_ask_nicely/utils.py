@@ -171,16 +171,25 @@ class AuditLogs:
 
 
 class SendgridMessenger:
-    message = Mail(
-        from_email="from_email@example.com",
-        to_emails="to@example.com",
-        subject="Sending with Twilio SendGrid is Fun",
-        html_content="<strong>and easy to do anywhere, even with Python</strong>",
-    )
+    def __init__(self, sync_data: dict) -> None:
+        self.data = sync_data
+        self.sender_email = os.getenv("EMAIL_ORIGIN")
+        self.receiver_email = os.getenv("EMAIL_DESTINATION")
 
-    def send_message(self, message):
+    def create_message(self):
+        message = Mail(
+            from_email=os.getenv("EMAIL_ORIGIN"),
+            to_emails=os.getenv("EMAIL_DESTINATION"),
+            subject="Mashey | Data Sync",
+            html_content="<strong>Greetings from the Mashey team!</strong>",
+        )
+
+        return message
+
+    def send_message(self):
         try:
             sg = SendGridAPIClient(os.getenv("SENDGRID_API_KEY"))
+            message = self.create_message()
             response = sg.send(message)
 
             LOGGER.info(response.status_code)
