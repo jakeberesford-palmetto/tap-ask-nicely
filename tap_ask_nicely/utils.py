@@ -191,31 +191,56 @@ class SendgridMessenger:
 
 
 class GmailMessenger:
-    def __init__(self) -> None:
-        self.sender_email = "info@mashey.com"
-        self.receiver_email = "jordan@mashey.com"
-        self.password = os.getenv("GMAIL_PW")
-        self.message = MIMEMultipart("alternative")
-        # Add conditional logic for a :red_circle: and :yellow_circle: emoji
-        self.message["Subject"] = "Mashey | Data Sync | 🟢"
-        self.message["From"] = self.sender_email
-        self.message["To"] = self.receiver_email
+    def __init__(self, sync_data: dict) -> None:
+        self.data = sync_data
+        self.sender_email = os.getenv("EMAIL_ORIGIN")
+        self.receiver_email = os.getenv("EMAIL_DESTINATION")
+        self.password = os.getenv("EMAIL_PW")
 
-    def create_message(self, sync_data: dict):
+    def email_subject(self, status_circles):
+        if self.data["comments"] != "":
+            subject = f"Mashey | Data Sync | {status_circles['red']}"
+            return subject
+        else:
+            subject = f"Mashey | Data Sync | {status_circles['green']}"
+            return subject
+
+    def sync_status(self, status_circles):
+        if self.data["comments"] != "":
+            status = f"Failure | {status_circles['red']}"
+            return status
+        else:
+            status = f"Success | {status_circles['green']}"
+            return status
+
+    def sync_comments(self):
+        if self.data["comments"] != "":
+            return self.data["comments"]
+        else:
+            comments = "The connector is performing as expected!"
+            return comments
+
+    def create_message(self):
+        status_circles = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
+        message = MIMEMultipart("alternative")
+        message["Subject"] = self.email_subject(status_circles)
+        message["From"] = self.sender_email
+        message["To"] = self.receiver_email
+        status = self.sync_status(status_circles)
+        comments = self.sync_comments()
+
         # Create the plain-text and HTML version of your message
         text = f"""\
         Hi,
         
         It's the Mashey team with a data pipeline update!
 
-        Run ID: {sync_data["runid"]}
-        Stream Name: {sync_data["stream_name"]}
-        Batch Start: {sync_data["start_time"]}
-        Run Time: {sync_data["run_time"]}
-        Batch End: {sync_data["end_time"]}
-        Records Synced: {sync_data["record_count"]}
-        Status: {sync_data["status"]}
-        Comments: {sync_data["comment"]}
+        Run ID: {self.data["run_id"]}
+        Batch Start: {self.data["start_time"]}
+        Run Time: {self.data["run_time"]}
+        Records Synced: {self.data["record_count"]}
+        Status: {status}
+        Comments: {comments}
         """
 
         html = f"""\
@@ -225,14 +250,12 @@ class GmailMessenger:
             <br>
             It's the Mashey team with a data pipeline update!<br>
             <ul>
-                <li>Run ID: {sync_data["runid"]}</li>
-                <li>Stream Name: {sync_data["stream_name"]}</li>
-                <li>Batch Start: {sync_data["start_time"]}</li>
-                <li>Run Time: {sync_data["run_time"]}</li>
-                <li>Batch End: {sync_data["end_time"]}</li>
-                <li>Records Synced: {sync_data["record_count"]}</li>
-                <li>Status: {sync_data["status"]}</li>
-                <li>Comments: {sync_data["comment"]}</li>
+                <li>Run ID: {self.data["run_id"]}</li>
+                <li>Batch Start: {self.data["start_time"]}</li>
+                <li>Run Time: {self.data["run_time"]}</li>
+                <li>Records Synced: {self.data["record_count"]}</li>
+                <li>Status: {status}</li>
+                <li>Comments: {comments}</li>
             </ul>
             <a href="http://www.mashey.com">Mashey</a><br>
             </p>
@@ -244,14 +267,14 @@ class GmailMessenger:
         part1 = MIMEText(text, "plain")
         part2 = MIMEText(html, "html")
 
-        return part1, part2
+        return part1, part2, message
 
-    def send_message(self, sync_overview: dict):
-        part1, part2 = self.create_message(sync_overview)
+    def send_message(self):
+        part1, part2, message = self.create_message()
         # Add HTML/plain-text parts to MIMEMultipart message
         # The email client will try to render the last part first
-        self.message.attach(part1)
-        self.message.attach(part2)
+        message.attach(part1)
+        message.attach(part2)
 
         # Create secure connection with server and send email
         context = ssl.create_default_context()
@@ -259,7 +282,9 @@ class GmailMessenger:
             try:
                 server.login(self.sender_email, self.password)
                 response = server.sendmail(
-                    self.sender_email, self.receiver_email, self.message.as_string()
+                    self.sender_email,
+                    self.receiver_email,
+                    message.as_string(),
                 )
                 server.quit()
                 return response
