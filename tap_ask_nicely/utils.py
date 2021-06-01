@@ -242,11 +242,6 @@ class EmailMessenger:
 
 
 class SendgridMessenger(EmailMessenger):
-    def __init__(self, sync_data: dict) -> None:
-        self.data = sync_data
-        self.sender_email = os.getenv("EMAIL_ORIGIN")
-        self.receiver_email = os.getenv("EMAIL_DESTINATION")
-
     def create_message(self):
         text_email, html_email = self.email_message()
 
@@ -273,11 +268,6 @@ class SendgridMessenger(EmailMessenger):
 
 
 class GmailMessenger(EmailMessenger):
-    def __init__(self, sync_data: dict) -> None:
-        self.data = sync_data
-        self.sender_email = os.getenv("EMAIL_ORIGIN")
-        self.receiver_email = os.getenv("EMAIL_DESTINATION")
-
     def create_message(self):
         text_email, html_email = self.email_message()
         message = MIMEMultipart("alternative")
