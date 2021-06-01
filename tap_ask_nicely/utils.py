@@ -248,30 +248,14 @@ class SendgridMessenger(EmailMessenger):
         self.receiver_email = os.getenv("EMAIL_DESTINATION")
 
     def create_message(self):
+        text_email, html_email = self.email_message()
+
         message = Mail(
-            from_email=os.getenv("EMAIL_ORIGIN"),
-            to_emails=os.getenv("EMAIL_DESTINATION"),
-            subject="Mashey | Data Sync",
-            html_content= f"""\
-            <html>
-            <body>
-                <p>Hi,<br>
-                <br>
-                It's the Mashey team with a data pipeline update!<br>
-                <ul>
-                    <li>Run ID: {self.data["run_id"]}</li>
-                    <li>Batch Start: {self.data["start_time"]}</li>
-                    <li>Run Time: {self.data["run_time"]}</li>
-                    <li>Records Synced: {self.data["record_count"]}</li>
-                    <li>Status: {status}</li>
-                    <li>Comments: {comments}</li>
-                </ul>
-                <a href="http://www.mashey.com">Mashey</a><br>
-                </p>
-            </body>
-            </html>
-            """,
-            )
+            from_email=self.sender_email,
+            to_emails=self.receiver_email,
+            subject=self.email_subject(),
+            html_content=html_email,
+        )
 
         return message
 
