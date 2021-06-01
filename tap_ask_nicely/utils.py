@@ -170,6 +170,37 @@ class AuditLogs:
         )
 
 
+class EmailMessenger:
+    def __init__(self, sync_data: dict) -> None:
+        self.data = sync_data
+        self.sender_email = os.getenv("EMAIL_ORIGIN")
+        self.receiver_email = os.getenv("EMAIL_DESTINATION")
+        self.status_circles = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
+
+    def email_subject(self):
+        if self.data["comments"] != "":
+            subject = f"Mashey | Data Sync | {self.status_circles['red']}"
+            return subject
+        else:
+            subject = f"Mashey | Data Sync | {self.status_circles['green']}"
+            return subject
+
+    def sync_status(self):
+        if self.data["comments"] != "":
+            status = f"Failure | {self.status_circles['red']}"
+            return status
+        else:
+            status = f"Success | {self.status_circles['green']}"
+            return status
+
+    def sync_comments(self):
+        if self.data["comments"] != "":
+            return self.data["comments"]
+        else:
+            comments = "The connector is performing as expected!"
+            return comments
+
+
 class SendgridMessenger:
     def __init__(self, sync_data: dict) -> None:
         self.data = sync_data
@@ -177,12 +208,31 @@ class SendgridMessenger:
         self.receiver_email = os.getenv("EMAIL_DESTINATION")
 
     def create_message(self):
+        status_circles = {"green": "🟢", "yellow": "🟡", "red": "🔴"}
         message = Mail(
             from_email=os.getenv("EMAIL_ORIGIN"),
             to_emails=os.getenv("EMAIL_DESTINATION"),
             subject="Mashey | Data Sync",
-            html_content="<strong>Greetings from the Mashey team!</strong>",
-        )
+            html_content= f"""\
+            <html>
+            <body>
+                <p>Hi,<br>
+                <br>
+                It's the Mashey team with a data pipeline update!<br>
+                <ul>
+                    <li>Run ID: {self.data["run_id"]}</li>
+                    <li>Batch Start: {self.data["start_time"]}</li>
+                    <li>Run Time: {self.data["run_time"]}</li>
+                    <li>Records Synced: {self.data["record_count"]}</li>
+                    <li>Status: {status}</li>
+                    <li>Comments: {comments}</li>
+                </ul>
+                <a href="http://www.mashey.com">Mashey</a><br>
+                </p>
+            </body>
+            </html>
+            """,
+            )
 
         return message
 
@@ -199,7 +249,7 @@ class SendgridMessenger:
             LOGGER.warning(error)
 
 
-class GmailMessenger:
+class GmailMessenger():
     def __init__(self, sync_data: dict) -> None:
         self.data = sync_data
         self.sender_email = os.getenv("EMAIL_ORIGIN")
