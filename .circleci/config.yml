@@ -16,13 +16,12 @@ jobs:
             - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
           command: |
-            mkdir ./test_results/pytest
             circleci tests glob "/home/circleci/project/*/tests/test_*" | circleci tests split --split-by=timings --timings-type=classname
             poetry run pytest --cov-report term-missing --cov=tap_ask_nicely tests/
             poetry run coveralls
           name: Run Tests and Upload Coverage
       - store_test_results:
-          path: test_results/pytest
+          path: tap-ask-nicely/tests/test_results/pytest
 orbs:
   python: circleci/python@1.4.0
 workflows:
