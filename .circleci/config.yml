@@ -2,6 +2,7 @@ version: 2.1
 jobs:
   build:
     executor: python/default
+    parallelism: 10
     steps:
       - checkout
       - restore_cache:
