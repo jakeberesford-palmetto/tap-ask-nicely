@@ -73,7 +73,9 @@ def test_gmail_messenger(test_data):
 
     assert response == "Email sent successfully."
 
-    gm.send_message = MagicMock(return_value="There was an issue sending the email: {error}")
+    gm.send_message = MagicMock(
+        return_value="There was an issue sending the email: {error}"
+    )
 
     assert gm.send_message() == "There was an issue sending the email: {error}"
 
@@ -84,6 +86,8 @@ def test_sendgrid_messenger(test_data):
 
     assert response == "Email sent successfully."
 
-    sg.send_message = MagicMock(return_value="There was an issue sending the email: {error}")
+    sg.send_message = MagicMock(
+        return_value="There was an issue sending the email: {error}"
+    )
 
     assert sg.send_message() == "There was an issue sending the email: {error}"
