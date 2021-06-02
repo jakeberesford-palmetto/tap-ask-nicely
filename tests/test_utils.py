@@ -1,3 +1,4 @@
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pytest
 from pytest_mock import mocker
@@ -57,14 +58,9 @@ def test_data():
 def test_gmail_messenger(test_data):
     data = test_data
     gm = GmailMessenger(data)
-    part1, part2, message = gm.create_message()
+    message = gm.create_message()
 
-    assert isinstance(part1, MIMEText)
-    assert isinstance(part2, MIMEText)
-
-    message.attach(part1)
-    message.attach(part2)
-
+    assert isinstance(message, MIMEMultipart)
     assert len(message._payload) == 2
     assert isinstance(message._payload[0], MIMEText)
     assert isinstance(message._payload[1], MIMEText)
