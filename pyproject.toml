@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "tap-ask-nicely"
-version = "0.1.0"
+version = "0.2.0"
 description = "A Singer Tap by Mashey"
-authors = ["Ryan Allen <rcallen89@gmail.com>"]
+authors = [
+    "Ryan Allen <ryan@mashey.com>",
+    "Jordan Williams <jordan@mashey.com>",
+    "Michael Cooper <michael@mashey.com>"
+]
 packages = [
     { include = "tap_ask_nicely" }
 ]
