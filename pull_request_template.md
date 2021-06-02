@@ -1,17 +1,18 @@
-# Description :: User Story
+# Description :: Update
 
 Add an overview of the changes in this pull request.
 
-## Type of Change
+## Type of Update
 
 - [ ] New Feature
 - [ ] Bug Fix
 - [ ] Refactor
-- [ ] Breaking Change
 - [ ] Testing
+- [ ] Dependency
 - [ ] Documentation
+- [ ] Breaking Change
 
-## Environment and Dependencies
+## Dependencies
 
 - [ ] Packages Added
 - [ ] Packages Updated
@@ -20,12 +21,8 @@ Add an overview of the changes in this pull request.
 
 Details:
 
-## Pull Request Notes
+- Dependency change details here.
+
+## Notes
 
 Add any notes here.
-
-## Pytest Results and Coverage
-
-```txt
-Paste Coverage.py results here
-```
