@@ -99,7 +99,6 @@ env.sh
 config.json
 .autoenv.zsh
 .vscode
-poetry.lock
 catalog.json
 state.json
 output
