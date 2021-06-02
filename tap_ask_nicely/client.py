@@ -43,3 +43,9 @@ class AskNicelyClient:
             "day": date_list[2],
         }
         return self._client.get(url, params=params).json()
+
+    def fetch_nps(self, rolling_days: int) -> dict:
+        url = f"{self._base_url}/getnps/{rolling_days}"
+        params = {"X-apikey": self._api_key}
+
+        return self._client.get(url, params=params).json()

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import singer
 from singer import utils
 from typing import Generator
+from .storage import StorageHandler
 
 LOGGER = singer.get_logger()
 
@@ -24,6 +25,7 @@ class Stream:
         self.client = client
         self.state = state
         self.config = config
+        self.storage_handler = StorageHandler(self.config.get("protocol", {}))
 
     def sync(self, *args, **kwargs):
         raise NotImplementedError("Sync of child class not implemented")
@@ -62,14 +64,7 @@ class Response(Stream):
         )
         end_time_utc = utils.strftime(utils.now())
 
-        contact_ids = set(
-            singer.get_bookmark(
-                self.state,
-                "globals",
-                "contact_ids",
-                default=[],
-            )
-        )
+        contact_ids = set()
         while response_length >= page_size:
             res = self.client.fetch_responses(
                 page, page_size, start_time_utc, end_time_utc
@@ -80,12 +75,8 @@ class Response(Stream):
                 contact_ids.add(record["contact_id"])
             page = page + 1
             response_length = len(records)
-        singer.write_bookmark(
-            self.state,
-            "globals",
-            "contact_ids",
-            list(contact_ids),
-        )
+
+        self.storage_handler.write_file(self.config["file_path"], list(contact_ids))
         singer.write_bookmark(
             self.state,
             self.tap_stream_id,
@@ -101,9 +92,7 @@ class Contact(Stream):
     replication_method = "FULL_TABLE"
 
     def sync(self, **kwargs) -> Generator[dict, None, None]:
-        contact_ids = singer.get_bookmark(
-            self.state, "globals", "contact_ids", default=set()
-        )
+        contact_ids = self.storage_handler.read_file(self.config["file_path"])
         for contact_id in contact_ids:
             response = self.client.fetch_contact(contact_id)
             yield {**response["data"], **{"customproperty_c": None}}
@@ -160,6 +149,20 @@ class HistoricalStats(Stream):
             self.state, self.tap_stream_id, self.bookmark_key, start_from
         )
 
+class NpsScore(Stream):
+    tap_stream_id = "nps"
+    key_properties = []
+    replication_key = ""
+    object_type = "NPS"
+    replication_method = "FULL_TABLE"
+
+    def sync(self) -> Generator[dict, None, None]:
+        rolling_days = self.config.get('nps_days', 30)
+
+        response = self.client.fetch_nps(rolling_days=rolling_days)
+        yield response
+
+
 
 STREAMS = {
     "response": Response,
@@ -167,4 +170,5 @@ STREAMS = {
     "unsubscribed": Unsubscribed,
     "sent_statistics": SentStatistics,
     "historical_stats": HistoricalStats,
+    "nps": NpsScore,
 }

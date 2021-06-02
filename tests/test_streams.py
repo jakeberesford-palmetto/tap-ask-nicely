@@ -2,12 +2,14 @@ from datetime import datetime, timedelta
 import os
 from tests.conftest import config
 import pytest
+import json
 from tap_ask_nicely.streams import (
     Response,
     Contact,
     Unsubscribed,
     SentStatistics,
     HistoricalStats,
+    NpsScore,
     STREAMS,
 )
 
@@ -46,6 +48,10 @@ def sent_statistics_stream(client, state, config):
 def historical_stats_stream(client, state, config):
     return HistoricalStats(client, state, config)
 
+@pytest.fixture
+def nps_score_stream(client, state, config):
+    return NpsScore(client, state, config)
+
 
 def test_unsubscribed_stream_properties(unsubscribed_stream):
     assert unsubscribed_stream.tap_stream_id == "unsubscribed"
@@ -79,7 +85,7 @@ def test_response_stream_properties(response_stream):
 
 # @pytest.mark.vcr()
 # Need to ignore the end_time_utc section of the URI still before using VCR
-def test_response_stream_sync(response_stream):
+def test_response_stream_sync(response_stream, local_file_path):
     contact_ids = set()
     for record in response_stream.sync():
         assert "response_id" in record
@@ -126,12 +132,14 @@ def test_response_stream_sync(response_stream):
     now_obj = utils.now()
     assert finished_sync_datetime_obj.date() == now_obj.date()
 
-    bookmark_contact_ids = singer.get_bookmark(
-        response_stream.state, "globals", "contact_ids", default=set()
-    )
-    assert len(contact_ids) == len(bookmark_contact_ids)
-    for bookmark_id in bookmark_contact_ids:
-        assert bookmark_id in contact_ids
+    file_contact_ids = []
+
+    with open(local_file_path, "r") as f:
+        file_contact_ids = json.loads(f.read())
+
+    assert len(contact_ids) == len(file_contact_ids)
+    for contact_id in file_contact_ids:
+        assert contact_id in contact_ids
 
 
 def test_contact_stream_properties(contact_stream):
@@ -145,7 +153,7 @@ def test_contact_stream_properties(contact_stream):
 
 # @pytest.mark.vcr()
 # Need to ignore the end_time_utc section of the URI still before using VCR
-def test_contact_stream_sync(response_stream, contact_stream, state):
+def test_contact_stream_sync(response_stream, contact_stream, local_file_path):
     # response stream must be ran first to get all contacts
     list(response_stream.sync())
 
@@ -201,9 +209,12 @@ def test_contact_stream_sync(response_stream, contact_stream, state):
         assert "thendeactivate" in record
         assert "customproperty_c" in record
         num_records = num_records + 1
-    assert num_records == len(
-        singer.get_bookmark(state, "globals", "contact_ids", default=set())
-    )
+    file_contact_ids = []
+
+    with open(local_file_path, "r") as f:
+        file_contact_ids = json.loads(f.read())
+
+    assert num_records == len(file_contact_ids)
 
 
 @pytest.mark.vcr()
@@ -220,7 +231,7 @@ def test_sent_statistics(sent_statistics_stream):
         assert "responserate" in sent_stat
 
 
-@pytest.mark.vcr()
+# @pytest.mark.vcr()
 def test_historical_stats(historical_stats_stream):
     last_sync_date = datetime.strftime((datetime.now() - timedelta(days=1)), "%Y-%m-%d")
     state = {"bookmarks": {"historical_stats": {"last_sync_date": last_sync_date}}}
@@ -249,3 +260,8 @@ def test_historical_stats(historical_stats_stream):
     assert state["bookmarks"][historical_stats_stream.tap_stream_id][
         "last_sync_date"
     ] == datetime.strftime(datetime.now(), "%Y-%m-%d")
+
+def test_nps_score(nps_score_stream):
+    for nps in nps_score_stream.sync():
+        assert "NPS" in nps
+        
