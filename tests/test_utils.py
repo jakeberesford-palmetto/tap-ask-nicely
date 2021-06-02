@@ -1,5 +1,7 @@
 from email.mime.text import MIMEText
 import pytest
+from pytest_mock import mocker
+from unittest.mock import MagicMock, Mock
 import os
 from datetime import datetime, timezone, timedelta
 from tap_ask_nicely.utils import SlackMessenger, SendgridMessenger, GmailMessenger
@@ -69,10 +71,19 @@ def test_gmail_messenger(test_data):
 
     response = gm.send_message()
 
-    assert isinstance(response, dict)
-    assert len(response) == 0
+    assert response == "Email sent successfully."
+
+    gm.send_message = MagicMock(return_value="There was an issue sending the email: {error}")
+
+    assert gm.send_message() == "There was an issue sending the email: {error}"
 
 
 def test_sendgrid_messenger(test_data):
     sg = SendgridMessenger(test_data)
-    sg.send_message()
+    response = sg.send_message()
+
+    assert response == "Email sent successfully."
+
+    sg.send_message = MagicMock(return_value="There was an issue sending the email: {error}")
+
+    assert sg.send_message() == "There was an issue sending the email: {error}"
