@@ -266,7 +266,7 @@ class SendgridMessenger(EmailMessenger):
 
             return "Email sent successfully."
         except Exception as error:
-            LOGGER.warning(error)
+            LOGGER.warning(f"There was an issue sending the email: {error}")
 
             return f"There was an issue sending the email: {error}"
 
@@ -304,5 +304,5 @@ class GmailMessenger(EmailMessenger):
                 return "Email sent successfully."
             except Exception as error:
                 LOGGER.error(f"There was an issue sending the email: {error}")
-                
+
                 return f"There was an issue sending the email: {error}"
