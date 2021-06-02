@@ -1,7 +1,11 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import pytest
+from pytest_mock import mocker
+from unittest.mock import MagicMock, Mock
 import os
-from unittest import mock
-from tap_ask_nicely.utils import SlackMessenger
+from datetime import datetime, timezone, timedelta
+from tap_ask_nicely.utils import SlackMessenger, SendgridMessenger, GmailMessenger
 
 
 # @pytest.fixture(autouse=True)
@@ -35,3 +39,51 @@ from tap_ask_nicely.utils import SlackMessenger
 #     breakpoint()
 
 #     assert response.status_code == 200
+
+
+@pytest.fixture
+def test_data():
+    data = {
+        "run_id": 12345,
+        "start_time": datetime.now(timezone.utc),
+        "run_time": 60,
+        "record_count": 98765,
+        "status": "",
+        "comments": "",
+    }
+
+    return data
+
+
+def test_gmail_messenger(test_data):
+    data = test_data
+    gm = GmailMessenger(data)
+    message = gm.create_message()
+
+    assert isinstance(message, MIMEMultipart)
+    assert len(message._payload) == 2
+    assert isinstance(message._payload[0], MIMEText)
+    assert isinstance(message._payload[1], MIMEText)
+
+    response = gm.send_message()
+
+    assert response == "Email sent successfully."
+
+    gm.send_message = MagicMock(
+        return_value="There was an issue sending the email: {error}"
+    )
+
+    assert gm.send_message() == "There was an issue sending the email: {error}"
+
+
+def test_sendgrid_messenger(test_data):
+    sg = SendgridMessenger(test_data)
+    response = sg.send_message()
+
+    assert response == "Email sent successfully."
+
+    sg.send_message = MagicMock(
+        return_value="There was an issue sending the email: {error}"
+    )
+
+    assert sg.send_message() == "There was an issue sending the email: {error}"

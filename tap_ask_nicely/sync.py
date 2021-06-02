@@ -4,7 +4,7 @@ import singer
 from singer import Transformer, metadata
 from tap_ask_nicely.client import AskNicelyClient
 from tap_ask_nicely.streams import STREAMS
-from tap_ask_nicely.utils import AuditLogs, SlackMessenger
+from tap_ask_nicely.utils import AuditLogs, SlackMessenger, GmailMessenger
 from datetime import date, datetime
 import time
 
@@ -88,12 +88,26 @@ def sync(config, state, catalog):
     state = singer.set_currently_syncing(state, None)
     singer.write_state(state)
 
+    # Create dictionary for data sync info
+    notification_data = {
+        "run_id": run_id,
+        "start_time": pipeline_start,
+        "run_time": (time.perf_counter() - pipeline_start_time),
+        "record_count": total_records,
+        "comments": '\n'.join(stream_comments),
+        "status": ""
+    }
+
     # Comment out for local runs
-    # if config["slack_notifications"] == True:
-    #     SlackMessenger.send_message(
-    #         run_id=run_id,
-    #         start_time=pipeline_start,
-    #         run_time=(time.perf_counter() - pipeline_start_time),
-    #         record_count=total_records,
-    #         comments='\n'.join(stream_comments),
-    #     )
+    if config["slack_notifications"] == True:
+        SlackMessenger.send_message(
+            run_id=run_id,
+            start_time=pipeline_start,
+            run_time=(time.perf_counter() - pipeline_start_time),
+            record_count=total_records,
+            comments='\n'.join(stream_comments),
+        )
+
+    if config["gmail_notifications"] == True:
+        gm = GmailMessenger(notification_data)
+        gm.send_message()
