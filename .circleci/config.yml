@@ -17,7 +17,8 @@ jobs:
       - run:
           command: |
             pwd
-            circleci tests glob "*/tests/test_*" | circleci tests split --split-by=timings --timings-type=classname
+            ls
+            circleci tests glob "/home/circleci/project/*/tests/test_*" | circleci tests split --split-by=timings --timings-type=classname
             poetry run pytest --cov-report term-missing --cov=tap_ask_nicely tests/
             poetry run coveralls
           name: Run Tests and Upload Coverage
