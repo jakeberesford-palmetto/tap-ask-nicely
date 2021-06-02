@@ -282,14 +282,13 @@ class GmailMessenger(EmailMessenger):
         mime_text = MIMEText(text_email, "plain")
         mime_html = MIMEText(html_email, "html")
 
-        return mime_text, mime_html, message
+        message.attach(mime_text)
+        message.attach(mime_html)
+
+        return message
 
     def send_message(self):
-        text_email, html_email, message = self.create_message()
-        # Add HTML/plain-text parts to MIMEMultipart message
-        # The email client will try to render the last part first
-        message.attach(text_email)
-        message.attach(html_email)
+        message = self.create_message()
 
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
