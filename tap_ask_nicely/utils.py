@@ -279,10 +279,10 @@ class GmailMessenger(EmailMessenger):
         message["From"] = self.sender_email
         message["To"] = self.receiver_email
 
-        part1 = MIMEText(text_email, "plain")
-        part2 = MIMEText(html_email, "html")
+        mime_text = MIMEText(text_email, "plain")
+        mime_html = MIMEText(html_email, "html")
 
-        return part1, part2, message
+        return mime_text, mime_html, message
 
     def send_message(self):
         text_email, html_email, message = self.create_message()
