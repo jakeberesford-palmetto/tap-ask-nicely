@@ -263,8 +263,12 @@ class SendgridMessenger(EmailMessenger):
             LOGGER.info(response.status_code)
             LOGGER.info(response.body)
             LOGGER.info(response.headers)
+
+            return "Email sent successfully."
         except Exception as error:
             LOGGER.warning(error)
+
+            return f"There was an issue sending the email: {error}"
 
 
 class GmailMessenger(EmailMessenger):
@@ -291,13 +295,15 @@ class GmailMessenger(EmailMessenger):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             try:
                 server.login(self.sender_email, os.getenv("EMAIL_PW"))
-                response = server.sendmail(
+                server.sendmail(
                     self.sender_email,
                     self.receiver_email,
                     message.as_string(),
                 )
                 server.quit()
-                return response
+
+                return "Email sent successfully."
             except Exception as error:
-                LOGGER.error(f"The following exception occured: {error}")
-                print(f"The following exception occured: {error}")
+                LOGGER.error(f"There was an issue sending the email: {error}")
+                
+                return f"There was an issue sending the email: {error}"
