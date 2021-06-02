@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     executor: python/default
-    parallelism: 10
+    parallelism: 5
     steps:
       - checkout
       - restore_cache:
@@ -16,7 +16,7 @@ jobs:
             - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
           command: |
-            circleci tests glob "./*/tests/*.py" | circleci tests split > /tmp/tests-to-run --split-by=timings --timings-type=classname
+            circleci tests glob "*/tests/test_*" | circleci tests split > /tmp/tests-to-run --split-by=timings --timings-type=classname
             poetry run pytest --cov-report term-missing --cov=tap_ask_nicely /tmp/tests-to-run
             poetry run coveralls
           name: Run Tests and Upload Coverage
