@@ -4,7 +4,7 @@ import singer
 from singer import Transformer, metadata
 from tap_ask_nicely.client import AskNicelyClient
 from tap_ask_nicely.streams import STREAMS
-from tap_ask_nicely.utils import AuditLogs, SlackMessenger, GmailMessenger
+from tap_ask_nicely.utils import AuditLogs, SendgridMessenger, SlackMessenger, GmailMessenger
 from datetime import date, datetime
 import time
 
@@ -108,6 +108,6 @@ def sync(config, state, catalog):
             comments='\n'.join(stream_comments),
         )
 
-    if config["gmail_notifications"] == True:
-        gm = GmailMessenger(notification_data)
-        gm.send_message()
+    if config["email_notifications"] == True:
+        sg = SendgridMessenger(notification_data)
+        sg.send_message()
