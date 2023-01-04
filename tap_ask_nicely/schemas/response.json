@@ -161,31 +161,415 @@
                 "string"
             ]
         },
-        "customproperty_c": {
-            "type": [
-                "null",
-                "string"
-            ]
-        },
         "topic_c": {
             "type": [
                 "null",
                 "string"
             ]
         },
-        "workflow_zendesk_detractor_c": {
+        "account_name_c": {
             "type": [
                 "null",
                 "string"
             ]
         },
-        "workflow_custom_alerts_mary_c": {
+        "additional_questions_c": {
             "type": [
                 "null",
                 "string"
             ]
         },
-        "workflow_email_alert_c": {
+        "additionalquestions_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "arrival_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "asknicely_restored_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "billing_state_province_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "bom_design_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "clean_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "cleanliness_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "comment2_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "communication_bp_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "communication_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "customername_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "damage_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "days_since_pto_date_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "describe_process_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "expectations_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "feedback_question_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "impact_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "install_rating_csat_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "installation_complete_date_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "installation_team_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "jco_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "lead_time_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "my_bills_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "my_impact_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "opportunity_name_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "overallsupport_csat_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "permit_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "phone_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "process_csat_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "production_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "professional_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "project_design_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "pto___net_meter_install_date_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "pto_buckets_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "punctual_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "quality_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "region_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "resolveissue_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "safety_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sales_partner_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sales_rep_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "scorecard_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "scorereply_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sdopportunitycustomername_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfbuildpartner_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfbuildpartnercontactid_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfbuildpartnerid_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfcontactlocation_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfopportunitycustomername_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfopportunityid_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfopportunitylocation_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sfopportunityurl_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "sitecapture_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "stage_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "standards_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "state_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "system_production_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "system_understanding_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "timely_ces_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_follow_up_blank_comm_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_get_more_reviews_1_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_get_more_reviews_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_get_more_reviews_in_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_get_more_reviews_pt_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_get_more_reviews_sp_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "workflow_testimonial_request_c": {
             "type": [
                 "null",
                 "string"
