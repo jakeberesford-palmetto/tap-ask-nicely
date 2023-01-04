@@ -293,7 +293,43 @@
                 "string"
             ]
         },
-        "customproperty_c": {
+        "dynamicsaccountid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+        "dynamicscaseid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+        "dynamicsleadid": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+        "lang_id": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+        "billing_state_province_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+        "phone_c": {
+            "type": [
+                "null",
+                "string"
+            ]
+        }
+        "stage_c": {
             "type": [
                 "null",
                 "string"
